@@ -8,12 +8,21 @@ const email = ref("");
 const password = ref("");
 const error = ref("")
 
+const loginError = (message?: string) => {
+  error.value = message || "Etwas ist schiefgelaufen... Probier es erneut"
+}
+
 const login = async () => {
 
   try {
 
     const response = await Axios.post('http://localhost:1337/api/auth/local', { identifier: email.value, password: password.value })
-    console.log(response)
+    if (response?.data?.jwt) {
+      localStorage.jwt = response.data.jwt
+      navigateTo('/')
+    } else {
+      loginError();
+    }
   } catch (err) {
     if (err?.response?.data?.error?.name === 'ValidationError') {
       error.value = "Falsche Email-Adresse oder Passwort"
