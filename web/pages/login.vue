@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import TextInput from "~/components/inputs/text-input.vue";
 import ActionButton from "~/components/action-button.vue";
 import Axios from "axios"
 
@@ -15,10 +14,9 @@ const loginError = (message?: string) => {
 const login = async () => {
 
   try {
-
     const response = await Axios.post('http://localhost:1337/api/auth/local', { identifier: email.value, password: password.value })
     if (response?.data?.jwt) {
-      localStorage.jwt = response.data.jwt
+      localStorage.jwt = response.data.jwt;
       navigateTo('/')
     } else {
       loginError();
@@ -38,13 +36,13 @@ const login = async () => {
 
     <div class="flex flex-col">
       <label for="email">Email</label>
-      <text-input name="email" v-model="email" />
+      <input name="email" v-model="email" />
     </div>
     <div class="flex flex-col">
       <label for="password">Passwort</label>
-      <text-input type="password" name="password" v-model="password" />
+      <input type="password" name="password" v-model="password" />
     </div>
-    <action-button @click="login">Login</action-button>
+    <button @click="login">Login</button>
 
     <div v-if="error" class="mt-5 p-3 bg-red-200 border-solid border border-red-400 rounded">
       {{ error }}

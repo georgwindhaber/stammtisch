@@ -23,5 +23,5 @@ if (process.client) {
 </script>
 
 <template>
-  <h1 class="bg-red-800">Hello world</h1>
+  <h1>Hello world</h1>
 </template>
