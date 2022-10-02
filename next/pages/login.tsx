@@ -5,6 +5,7 @@ import Axios, { AxiosError } from "axios";
 import { NextPage } from "next";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { generalStore } from "../stores/general-store";
 
 const Login: NextPage = () => {
     const [email, setEmail] = useState("")
@@ -27,6 +28,7 @@ const Login: NextPage = () => {
             const response = await Axios.post('http://localhost:1337/api/auth/local', { identifier: email, password: password })
             if (response?.data?.jwt) {
                 localStorage.jwt = response.data.jwt;
+                generalStore.jwt = response.data.jwt
                 router.push("/")
             }
         } catch (err) {

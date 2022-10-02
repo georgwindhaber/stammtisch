@@ -3,6 +3,7 @@ import Axios from 'axios'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import { generalStore } from '../stores/general-store'
 
 const Home: NextPage = () => {
 
@@ -14,9 +15,9 @@ const Home: NextPage = () => {
     } else {
       const queryDrinks =async () => {
         const drinks = await Axios.get("http://localhost:1337/api/drinks?filters[users_permissions_user][id]=1", {headers: {
-          Authorization: `Bearer ${localStorage.jwt}`
+          Authorization: `Bearer ${generalStore.jwt}`
         }})
-        console.log(drinks.data.data)
+        console.log(drinks.data)
       }
       queryDrinks()
     }
