@@ -1,4 +1,3 @@
-import { TextField } from "@mui/material"
 import Axios from "axios"
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
@@ -21,7 +20,7 @@ const Home: NextPage = () => {
 			}
 			queryDrinks()
 		}
-	})
+	}, [])
 
 	return (
 		<>
