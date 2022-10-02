@@ -27,7 +27,7 @@ const Login: NextPage = () => {
             setIsLoading(true)
             const response = await Axios.post('http://localhost:1337/api/auth/local', { identifier: email, password: password })
             if (response?.data?.jwt) {
-                localStorage.jwt = response.data.jwt;
+                generalStore.userId = response.data.user.id
                 generalStore.jwt = response.data.jwt
                 router.push("/")
             }

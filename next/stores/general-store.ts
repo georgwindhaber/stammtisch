@@ -10,6 +10,7 @@ class GeneralStore {
   isLoading = false;
   isRehydrated = true;
   jwt: string | null = null;
+  userId: number | null = null;
 
   constructor() {
     makeAutoObservable(this);
