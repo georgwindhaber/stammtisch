@@ -8,7 +8,7 @@ import { generalStore } from "../stores/general-store";
 const Home: NextPage = () => {
   const router = useRouter();
   useEffect(() => {
-    if (!localStorage.jwt) {
+    if (!generalStore.jwt) {
       router.push("/login");
     } else {
       const queryDrinks = async () => {
@@ -28,7 +28,7 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <h1>Please log in</h1>
+      <h1>Hello {generalStore.userId}</h1>
     </>
   );
 };
