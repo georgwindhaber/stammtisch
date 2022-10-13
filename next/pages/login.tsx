@@ -3,7 +3,7 @@ import { Alert, IconButton, Snackbar, TextField } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import Axios, { AxiosError } from "axios"
 import { NextPage } from "next"
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent, useState } from "react"
 import { useRouter } from "next/router"
 import { generalStore } from "../stores/general-store"
 

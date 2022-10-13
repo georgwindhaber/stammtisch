@@ -3,9 +3,10 @@ import { AppBar } from "@mui/material"
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
-		<AppBar>
+		<>
+			<AppBar />
 			<Component {...pageProps} />
-		</AppBar>
+		</>
 	)
 }
 
