@@ -5,11 +5,12 @@ import { generalStore } from "../stores/general-store"
 const Home: NextPage = () => {
 	const { drinks } = useDrinks()
 
+	console.log(drinks)
+
 	return (
 		<>
-			<h1>Hello {generalStore.userId}</h1>
 			{drinks.map((drink) => {
-				return <div>{drink.id}</div>
+				return <div key={drink.id}>{drink.type}</div>
 			})}
 		</>
 	)
