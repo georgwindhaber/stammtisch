@@ -28,7 +28,15 @@ app.listen(port, async () => {
           new Date().toISOString(),
         ]
       );
-      res.send(dbRes);
+      if (dbRes) {
+        res.send({ status: "success", code: 200, message: "Success" });
+      } else {
+        res.send({
+          status: "error",
+          code: 500,
+          message: "Something unexpected happened inserting the new drink",
+        });
+      }
     } catch (error) {
       console.error(error);
     }
