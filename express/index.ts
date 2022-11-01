@@ -17,6 +17,25 @@ app.listen(port, async () => {
 
   app.get("/login", (req, res) => {});
 
+  app.get("/users",async (req, res) => {
+    try {
+      const dbRes = await dbClient.query(
+        `select userId, email, username from users`.toLowerCase(),
+      );
+      if (dbRes) {
+        res.send(dbRes.rows);
+      } else {
+        res.send({
+          status: "error",
+          code: 500,
+          message: "Something unexpected happened selecting user",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  })
+
   app.get("/scores", async (req, res) => {
     try {
       const dbRes = await dbClient.query(
@@ -35,6 +54,25 @@ app.listen(port, async () => {
       console.error(error);
     }
   });
+
+  app.get("/drinks", async (req, res) => {
+    try {
+      const dbRes = await dbClient.query(
+        `select "drinkid", ", "userid" from drinks where userid=$1`.toLowerCase(), [req.query.user]
+      );
+      if (dbRes) {
+        res.send(dbRes.rows);
+      } else {
+        res.send({
+          status: "error",
+          code: 500,
+          message: "Something unexpected happened inserting the new drink",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  })
 
   app.post("/drinks", async (req, res) => {
     try {
