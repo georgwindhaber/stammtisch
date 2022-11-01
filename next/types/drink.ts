@@ -2,8 +2,10 @@ type DrinkType = "Beer" | "Wine" | "Water" | "Softdrink"
 
 export type Drink = {
 	id: number
-	type: DrinkType
-	created: Date
-	lastUpdate: Date
-	user: "string"
+	attributes: {
+		Type: DrinkType
+		createdAt: Date
+		updatedAt: Date
+		user: "string"
+	}
 }
