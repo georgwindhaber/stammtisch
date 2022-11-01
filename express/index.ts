@@ -17,6 +17,25 @@ app.listen(port, async () => {
 
   app.get("/login", (req, res) => {});
 
+  app.get("/scores", async (req, res) => {
+    try {
+      const dbRes = await dbClient.query(
+        `select userId, count(drinkId) from drinks group by userId`.toLowerCase(),
+      );
+      if (dbRes) {
+        res.send(dbRes.rows);
+      } else {
+        res.send({
+          status: "error",
+          code: 500,
+          message: "Something unexpected happened inserting the new drink",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
   app.post("/drinks", async (req, res) => {
     try {
       const dbRes = await dbClient.query(
