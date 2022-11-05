@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { Client, Pool } from "pg";
 import { pool } from "./database/connection";
+import { mapToCamelCase } from "./util/helpers";
 
 const app = express();
 const port = 3003;
@@ -20,17 +20,17 @@ app.get("/users", async (req, res) => {
   try {
     const dbClient = await pool.connect();
     const dbRes = await dbClient.query(
-      `select u.userId, u.userName as "userName", u.email, count(drinkId) as drinkCount
+      `select u.user_id, u.username, u.email, count(drink_id) as drink_count
       from users u 
-      left join drinks d on d.userId = u.userId 
-      group by u.userId
-      order by count(drinkId) desc`.toLowerCase()
+      left join drinks d on d.user_id = u.user_id 
+      group by u.user_id
+      order by count(drink_id) desc`.toLowerCase()
     );
 
     dbClient.release();
 
     if (dbRes) {
-      res.send(dbRes.rows);
+      res.send(dbRes.rows.map(item => mapToCamelCase(item)));
     } else {
       res.send({
         status: "error",
@@ -47,7 +47,7 @@ app.get("/drinks", async (req, res) => {
   try {
     const dbClient = await pool.connect();
     const dbRes = await dbClient.query(
-      `select "drinkid", ", "userid" from drinks where userid=$1`.toLowerCase(),
+      `select drink_id, user_id from drinks where user_id=$1`.toLowerCase(),
       [req.query.user]
     );
 
@@ -71,7 +71,7 @@ app.post("/drinks", async (req, res) => {
   try {
     const dbClient = await pool.connect();
     const dbRes = await dbClient.query(
-      `insert into drinks ("drinkTypeId", "userId", "createdAt", "updatedAt") values ($1, $2, $3, $4)`.toLowerCase(),
+      `insert into drinks ("drink_type_id", "user_id", "created_at", "updated_at") values ($1, $2, $3, $4)`.toLowerCase(),
       [
         req.body.drinkTypeId,
         req.body.userId,

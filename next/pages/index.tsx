@@ -8,7 +8,7 @@ const Home: NextPage = () => {
 		<>
 			<h1>Stammtisch</h1>
 			{users.map((user) => {
-				return <div key={user.userId}>{user.userName} - {user.drinkCount}</div>
+				return <div key={user.userId}>{user.username} - {user.drinkCount}</div>
 			})}
 		</>
 	)

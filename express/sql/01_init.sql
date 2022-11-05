@@ -1,35 +1,35 @@
 -- Users
-drop table users;
+drop table users cascade;
 
 create table users (
-    userId serial primary key,
+    user_id serial primary key,
     email text,
-    userPassword text,
-    userName text
+    user_password text,
+    username text
 );
 
 -- Drinks
 drop table drinks;
-drop table drinkTypes;
+drop table drink_types;
 
-create table drinkTypes (
-    drinkTypeId serial primary key,
+create table drink_types (
+    drink_type_id serial primary key,
     drinkName text,
 
-    createdAt timestamp,
-    updatedAt timestamp
+    created_at timestamp,
+    updated_at timestamp
 );
 
 create table drinks (
-    drinkId serial primary key,
-    drinkTypeId int,
-    userId int,
+    drink_id serial primary key,
+    drink_type_id int,
+    user_id int,
 
-    createdAt timestamp,
-    updatedAt timestamp,
+    created_at timestamp,
+    updated_at timestamp,
 
-    foreign key (drinkTypeId) references drinkTypes,
-    foreign key (userId) references users
+    foreign key (drink_type_id) references drink_types,
+    foreign key (user_id) references users
 );
 
 ---------------------
@@ -39,11 +39,11 @@ insert into users values (1, 'georg.windhaber@gmail.com', 'brogress', 'Georg Win
 insert into users values (2, 'nico.kratky@me.com', 'securePassword9309', 'Nico Kratky');
 insert into users values (3, 'christine.zeh@gmail.com', 'fishcakeTastesGood', 'Christine Zeh');
 
-insert into drinkTypes values (1, 'beer', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
-insert into drinkTypes values (2, 'wine', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
-insert into drinkTypes values (3, 'water', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
+insert into drink_types values (1, 'beer', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
+insert into drink_types values (2, 'wine', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
+insert into drink_types values (3, 'water', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
 
-insert into drinks (drinkTypeId, userId, createdAt, updatedAt) values (1, 1, '2022-11-01T15:00:00', '2022-11-01T15:00:00');
-insert into drinks (drinkTypeId, userId, createdAt, updatedAt) values (2, 1, '2022-11-01T15:00:00', '2022-11-01T15:00:00');
-insert into drinks (drinkTypeId, userId, createdAt, updatedAt) values (1, 2, '2022-11-01T15:00:00', '2022-11-01T15:00:00');
-insert into drinks (drinkTypeId, userId, createdAt, updatedAt) values (1, 3, '2022-11-01T15:00:00', '2022-11-01T15:00:00');
+insert into drinks (drink_type_id, user_id, created_at, updated_at) values (1, 1, '2022-11-01T15:00:00', '2022-11-01T15:00:00');
+insert into drinks (drink_type_id, user_id, created_at, updated_at) values (2, 1, '2022-11-01T15:00:00', '2022-11-01T15:00:00');
+insert into drinks (drink_type_id, user_id, created_at, updated_at) values (1, 2, '2022-11-01T15:00:00', '2022-11-01T15:00:00');
+insert into drinks (drink_type_id, user_id, created_at, updated_at) values (1, 3, '2022-11-01T15:00:00', '2022-11-01T15:00:00');
