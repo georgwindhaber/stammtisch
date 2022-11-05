@@ -20,7 +20,7 @@ app.listen(port, async () => {
   app.get("/users", async (req, res) => {
     try {
       const dbRes = await dbClient.query(
-        `select u.userId, u.userName, u.email, count(drinkId)
+        `select u.userId, u.userName, u.email, count(drinkId) as drinkCount
         from users u 
         left join drinks d on d.userId = u.userId 
         group by u.userId

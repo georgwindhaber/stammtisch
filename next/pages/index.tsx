@@ -1,15 +1,14 @@
 import type { NextPage } from "next"
-import { useDrinks } from "../hooks/use-drinks"
-import { generalStore } from "../stores/general-store"
+import { useUsers } from "../hooks/use-users"
 
 const Home: NextPage = () => {
-	const { drinks } = useDrinks()
+	const users = useUsers()
 
 	return (
 		<>
-			<h1>My drinks {drinks.count}</h1>
-			{drinks.drinks.map((drink) => {
-				return <div key={drink.id}>{drink.attributes.Type}</div>
+			<h1>Stammtisch</h1>
+			{users.map((user) => {
+				return <div key={user.userId}>{user.userName} - {user.drinkCount}</div>
 			})}
 		</>
 	)
