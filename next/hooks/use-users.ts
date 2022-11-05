@@ -8,10 +8,7 @@ export const useUsers = () => {
 
 	useEffect(() => {
 		const fetchDrinks = async () => {
-            console.log(`${process.env.API_URL}/users`)
 			const users = await axios.get(`${process.env.API_URL}/users`)
-
-			console.log(users)
 
 			setDrinks(users.data)
 		}
