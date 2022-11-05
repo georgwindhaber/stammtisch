@@ -17,30 +17,12 @@ app.listen(port, async () => {
 
   app.get("/login", (req, res) => {});
 
-  app.get("/users",async (req, res) => {
+  app.get("/users", async (req, res) => {
     try {
       const dbRes = await dbClient.query(
-        `select userId, email, username from users`.toLowerCase(),
-      );
-      if (dbRes) {
-        res.send(dbRes.rows);
-      } else {
-        res.send({
-          status: "error",
-          code: 500,
-          message: "Something unexpected happened selecting user",
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  })
-
-  app.get("/scores", async (req, res) => {
-    try {
-      const dbRes = await dbClient.query(
-        `select u.userId, count(drinkId), u.userName 
-        from drinks d join users u on d.userId = u.userId 
+        `select u.userId, u.userName, u.email, count(drinkId)
+        from users u 
+        left join drinks d on d.userId = u.userId 
         group by u.userId
         order by count(drinkId) desc`.toLowerCase(),
       );
@@ -50,7 +32,7 @@ app.listen(port, async () => {
         res.send({
           status: "error",
           code: 500,
-          message: "Something unexpected happened inserting the new drink",
+          message: "Something unexpected happened querying the user data",
         });
       }
     } catch (error) {
