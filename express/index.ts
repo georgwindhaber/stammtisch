@@ -1,11 +1,14 @@
 import express from "express";
+import cors from "cors"
 import bodyParser from "body-parser";
 import { Client } from "pg";
+
 
 const app = express();
 const port = 3003;
 
 app.use(bodyParser.json());
+app.use(cors({origin: ["http://localhost:3000"]}))
 
 app.listen(port, async () => {
   const dbClient = new Client({ user: "postgres", password: "brogress" });
