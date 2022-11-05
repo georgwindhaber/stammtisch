@@ -39,7 +39,7 @@ app.listen(port, async () => {
   app.get("/scores", async (req, res) => {
     try {
       const dbRes = await dbClient.query(
-        `select userId, count(drinkId) from drinks group by userId`.toLowerCase(),
+        `select u.userId, count(drinkId), u.userName from drinks d join users u on d.userId = u.userId group by u.userId`.toLowerCase(),
       );
       if (dbRes) {
         res.send(dbRes.rows);
