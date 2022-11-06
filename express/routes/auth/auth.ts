@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 
 import express, { Request, Response, NextFunction } from 'express'
 import { pool } from '../../database/connection'
+import bcrypt from 'bcrypt'
 
 const auth = express.Router()
 
@@ -11,23 +12,41 @@ const generateAccessToken = (username: string) => {
 	return jwt.sign({ username }, superSecret, { expiresIn: 1800 })
 }
 
+auth.post('/register', async (req, res) => {
+	bcrypt.hash(req.body.password, 10, async (err, hash) => {
+		const dbClient = await pool.connect()
+		const dbRes = await dbClient.query(
+			'insert into users (email, username, password_text) values ($1, $2, $3)'.toLowerCase(),
+			[req.body.email, req.body.username, hash]
+		)
+
+		dbClient.release()
+		res.send(dbRes)
+	})
+})
+
 auth.post('/login', async (req, res) => {
 	const dbClient = await pool.connect()
 	const dbRes = await dbClient.query(
-		`select user_id, email, username
-		from users
-		where email = $1
-		and user_password = $2`.toLowerCase(),
-		[req.body.username, req.body.password]
+		`select user_id, email, username, password_text, password_salt
+				from users
+				where email = $1`.toLowerCase(),
+		[req.body.username]
 	)
 
 	dbClient.release()
 
 	if (dbRes.rowCount) {
-		const token = generateAccessToken(req.body.username)
-		res.send({ token })
+		bcrypt.compare(req.body.password, dbRes.rows[0].password_text, (err, result) => {
+			if (result) {
+				const token = generateAccessToken(req.body.username)
+				res.send({ token, user: dbRes.rows[0] })
+			} else {
+				res.sendStatus(401)
+			}
+		})
 	} else {
-		res.sendStatus(401)
+		res.sendStatus(404)
 	}
 })
 
