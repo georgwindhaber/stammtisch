@@ -13,7 +13,7 @@ app.use(cors({ origin: ['http://localhost:3000'] }))
 
 app.use('/auth', auth)
 
-app.use('/drinks', drinks)
+app.use('/drinks', authToken, drinks)
 app.use('/users', authToken, users)
 
 app.get('/', (req, res) => {
