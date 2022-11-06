@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 
 import express, { Request, Response, NextFunction } from 'express'
+import { pool } from '../../database/connection'
 
 const auth = express.Router()
 
@@ -10,9 +11,24 @@ const generateAccessToken = (username: string) => {
 	return jwt.sign({ username }, superSecret, { expiresIn: 1800 })
 }
 
-auth.post('/', (req, res) => {
-	const token = generateAccessToken(req.body.username)
-	res.send({ token })
+auth.post('/login', async (req, res) => {
+	const dbClient = await pool.connect()
+	const dbRes = await dbClient.query(
+		`select user_id, email, username
+		from users
+		where email = $1
+		and user_password = $2`.toLowerCase(),
+		[req.body.username, req.body.password]
+	)
+
+	dbClient.release()
+
+	if (dbRes.rowCount) {
+		const token = generateAccessToken(req.body.username)
+		res.send({ token })
+	} else {
+		res.sendStatus(401)
+	}
 })
 
 export const authToken = (req: Request, res: Response, next: NextFunction) => {
@@ -31,9 +47,5 @@ export const authToken = (req: Request, res: Response, next: NextFunction) => {
 		next()
 	})
 }
-
-auth.get('/login', authToken, (req, res) => {
-	res.send({ value: 'slaaaayyy' })
-})
 
 export { auth }
