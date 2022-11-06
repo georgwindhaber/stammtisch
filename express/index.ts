@@ -30,7 +30,7 @@ app.get("/users", async (req, res) => {
     dbClient.release();
 
     if (dbRes) {
-      res.send(dbRes.rows.map(item => mapToCamelCase(item)));
+      res.send(dbRes.rows.map((item) => mapToCamelCase(item)));
     } else {
       res.send({
         status: "error",
@@ -97,5 +97,5 @@ app.post("/drinks", async (req, res) => {
 });
 
 app.listen(port, async () => {
-  console.log("listening to routes");
+  console.log("Server is running on port " + port);
 });
