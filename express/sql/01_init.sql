@@ -4,8 +4,7 @@ drop table users cascade;
 create table users (
     user_id serial primary key,
     email text unique,
-    password_text text,
-    password_salt text,
+    user_password text,
     username text
 );
 

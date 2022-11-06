@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'
-
 import express, { Request, Response, NextFunction } from 'express'
 import { pool } from '../../database/connection'
 import bcrypt from 'bcrypt'
+import { PostgresError } from '../../types/PostgresError'
 
 const auth = express.Router()
 
@@ -14,21 +14,30 @@ const generateAccessToken = (username: string) => {
 
 auth.post('/register', async (req, res) => {
 	bcrypt.hash(req.body.password, 10, async (err, hash) => {
+		if (err) {
+			res.sendStatus(500)
+			return
+		}
 		const dbClient = await pool.connect()
-		const dbRes = await dbClient.query(
-			'insert into users (email, username, password_text) values ($1, $2, $3)'.toLowerCase(),
-			[req.body.email, req.body.username, hash]
-		)
-
-		dbClient.release()
-		res.send(dbRes)
+		try {
+			const dbRes = await dbClient.query(
+				'insert into users (email, username, user_password) values ($1, $2, $3)'.toLowerCase(),
+				[req.body.email, req.body.username, hash]
+			)
+			dbClient.release()
+			res.send(dbRes)
+		} catch (err: unknown) {
+			if ((err as PostgresError)?.constraint === 'users_email_key') {
+				res.sendStatus(403)
+			}
+		}
 	})
 })
 
 auth.post('/login', async (req, res) => {
 	const dbClient = await pool.connect()
 	const dbRes = await dbClient.query(
-		`select user_id, email, username, password_text, password_salt
+		`select user_id, email, username, user_password
 				from users
 				where email = $1`.toLowerCase(),
 		[req.body.username]
@@ -38,6 +47,10 @@ auth.post('/login', async (req, res) => {
 
 	if (dbRes.rowCount) {
 		bcrypt.compare(req.body.password, dbRes.rows[0].password_text, (err, result) => {
+			if (err) {
+				res.sendStatus(500)
+				return
+			}
 			if (result) {
 				const token = generateAccessToken(req.body.username)
 				res.send({ token, user: dbRes.rows[0] })
