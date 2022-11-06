@@ -7,7 +7,7 @@ const Home: NextPage = () => {
 	const { users, reload } = useUsers()
 
 	const drink = async (userId: number) => {
-		await axios.post(`${process.env.API_URL}/drinks`, {userId, drinkTypeId: 1})
+		await axios.post(`${process.env.API_URL}/drinks`, { userId, drinkTypeId: 1 })
 		reload()
 	}
 
