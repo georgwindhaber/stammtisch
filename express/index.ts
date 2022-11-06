@@ -20,5 +20,3 @@ app.get('/', (req, res) => {
 app.listen(port, async () => {
 	console.log('Server is running on port ' + port)
 })
-
-//  why god why
