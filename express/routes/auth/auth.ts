@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction } from 'express'
 import { pool } from '../../database/connection'
 import bcrypt from 'bcrypt'
 import { PostgresError } from '../../types/PostgresError'
+import { mapToCamelCase } from '../../util/helpers'
 
 const auth = express.Router()
 
@@ -55,7 +56,9 @@ auth.post('/login', async (req, res) => {
 			}
 			if (result) {
 				const token = generateAccessToken(req.body.username)
-				res.send({ token, user: dbRes.rows[0] })
+				dbRes.rows[0].user_password = undefined
+				const frontendUser = mapToCamelCase(dbRes.rows[0])
+				res.send({ jwt: token, user: frontendUser })
 			} else {
 				res.sendStatus(401)
 			}

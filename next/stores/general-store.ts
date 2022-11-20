@@ -2,6 +2,7 @@ import localforage from "localforage"
 import { makeAutoObservable, runInAction } from "mobx"
 import { makePersistable } from "mobx-persist-store"
 import { enableStaticRendering } from "mobx-react"
+import { User } from "../types/user"
 
 const IS_SERVER = typeof window === "undefined"
 enableStaticRendering(IS_SERVER)
@@ -10,7 +11,7 @@ class GeneralStore {
 	isLoading = false
 	isRehydrated = true
 	jwt: string | null = null
-	userId: number | null = null
+	user: User | null = null
 
 	constructor() {
 		makeAutoObservable(this)
@@ -25,7 +26,7 @@ class GeneralStore {
 		try {
 			await makePersistable(this, {
 				name: "general",
-				properties: ["jwt", "userId"],
+				properties: ["jwt"],
 				storage: localforage,
 			})
 		} catch (error) {

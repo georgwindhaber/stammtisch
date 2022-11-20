@@ -6,6 +6,7 @@ import { NextPage } from "next"
 import { ChangeEvent, useState } from "react"
 import { useRouter } from "next/router"
 import { generalStore } from "../stores/general-store"
+import { runInAction } from "mobx"
 
 const Login: NextPage = () => {
 	const [email, setEmail] = useState("")
@@ -28,9 +29,11 @@ const Login: NextPage = () => {
 				username: email,
 				password: password,
 			})
-			if (response?.data?.jwt) {
-				generalStore.userId = response.data.user.id
-				generalStore.jwt = response.data.jwt
+			if (response) {
+				runInAction(() => {
+					generalStore.user = response.data.user
+					generalStore.jwt = response.data.jwt
+				})
 				router.push("/")
 			}
 		} catch (err) {
