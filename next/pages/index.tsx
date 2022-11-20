@@ -12,7 +12,11 @@ const Home: NextPage = () => {
 	const { isLoggedIn, logout } = useLogin()
 
 	const drink = async (userId: number) => {
-		await axios.post(`${process.env.API_URL}/drinks`, { userId, drinkTypeId: 1 })
+		await axios.post(
+			`${process.env.API_URL}/drinks`,
+			{ userId, drinkTypeId: 1 },
+			{ headers: { Authorization: `Bearer: ${generalStore.jwt}` } },
+		)
 		reload()
 	}
 

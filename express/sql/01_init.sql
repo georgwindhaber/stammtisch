@@ -39,9 +39,9 @@ create table drinks (
 -- insert into users values (2, 'nico.kratky@me.com', '', '', 'Nico Kratky');
 -- insert into users values (3, 'christine.zeh@gmail.com', '', '', 'Christine Zeh');
 
--- insert into drink_types values (1, 'beer', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
--- insert into drink_types values (2, 'wine', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
--- insert into drink_types values (3, 'water', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
+insert into drink_types values (1, 'beer', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
+insert into drink_types values (2, 'wine', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
+insert into drink_types values (3, 'water', '2022-11-01T15:00:00', '2022-11-01T15:00:00');
 
 -- insert into drinks (drink_type_id, user_id, created_at, updated_at) values (1, 1, '2022-11-01T15:00:00', '2022-11-01T15:00:00');
 -- insert into drinks (drink_type_id, user_id, created_at, updated_at) values (2, 1, '2022-11-01T15:00:00', '2022-11-01T15:00:00');
