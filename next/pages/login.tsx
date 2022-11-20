@@ -38,11 +38,8 @@ const Login: NextPage = () => {
 			}
 		} catch (err) {
 			const error = err as AxiosError
-			if (error.response?.data) {
-				const strapiError = error.response?.data as any
-				if (strapiError.error?.name === "ValidationError") {
-					setErrorMessage("Falsche Email-Adresse oder Passwort")
-				}
+			if (error.response?.status === 401) {
+				setErrorMessage("Falsche Email-Adresse oder Passwort")
 			} else {
 				setErrorMessage("Keine verbinding zum Server")
 			}
@@ -74,7 +71,6 @@ const Login: NextPage = () => {
 					</IconButton>
 				</Alert>
 			</Snackbar>
-			{email}
 		</>
 	)
 }
