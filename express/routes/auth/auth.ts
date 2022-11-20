@@ -28,7 +28,9 @@ auth.post('/register', async (req, res) => {
 			res.send(dbRes)
 		} catch (err: unknown) {
 			if ((err as PostgresError)?.constraint === 'users_email_key') {
-				res.sendStatus(403)
+				res.sendStatus(400)
+			} else {
+				res.sendStatus(500)
 			}
 		}
 	})
@@ -46,7 +48,7 @@ auth.post('/login', async (req, res) => {
 	dbClient.release()
 
 	if (dbRes.rowCount) {
-		bcrypt.compare(req.body.password, dbRes.rows[0].password_text, (err, result) => {
+		bcrypt.compare(req.body.password, dbRes.rows[0].user_password, (err, result) => {
 			if (err) {
 				res.sendStatus(500)
 				return

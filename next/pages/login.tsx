@@ -24,8 +24,8 @@ const Login: NextPage = () => {
 	const handleLogin = async () => {
 		try {
 			setIsLoading(true)
-			const response = await Axios.post("http://localhost:1337/api/auth/local", {
-				identifier: email,
+			const response = await Axios.post("http://localhost:3003/auth/login", {
+				username: email,
 				password: password,
 			})
 			if (response?.data?.jwt) {
