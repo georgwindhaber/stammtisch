@@ -8,7 +8,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<ThemeProvider theme={defaultTheme}>
 			<CssBaseline />
-			<AppBar />
 			<Component {...pageProps} />
 		</ThemeProvider>
 	)

@@ -1,5 +1,6 @@
 import { LoadingButton } from "@mui/lab"
-import { Alert, FormControl, IconButton, Snackbar, TextField, Typography } from "@mui/material"
+import { Alert, Container, FormControl, IconButton, Snackbar, styled, TextField, Typography } from "@mui/material"
+import { Login as LoginIcon } from "@mui/icons-material"
 import CloseIcon from "@mui/icons-material/Close"
 import Axios, { AxiosError } from "axios"
 import { NextPage } from "next"
@@ -7,6 +8,13 @@ import { ChangeEvent, useState } from "react"
 import { useRouter } from "next/router"
 import { generalStore } from "../stores/general-store"
 import { runInAction } from "mobx"
+
+const LoginContainer = styled(Container)({
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+	flexDirection: "column",
+})
 
 const Login: NextPage = () => {
 	const [email, setEmail] = useState("")
@@ -49,12 +57,24 @@ const Login: NextPage = () => {
 	}
 
 	return (
-		<>
+		<LoginContainer fixed maxWidth="xs">
 			<Typography variant="h4">Stammtisch</Typography>
-			<FormControl>
-				<TextField label="Email" onChange={handleEmailChange} />
-				<TextField label="Passwort" type="password" onChange={handlePasswordChange} />
-				<LoadingButton variant="contained" loading={isLoading} onClick={handleLogin}>
+			<FormControl fullWidth style={{ marginTop: 48 }}>
+				<TextField label="Email" fullWidth onChange={handleEmailChange} />
+				<TextField
+					style={{ marginTop: 16 }}
+					label="Passwort"
+					type="password"
+					fullWidth
+					onChange={handlePasswordChange}
+				/>
+				<LoadingButton
+					style={{ margin: "24px auto auto" }}
+					variant="contained"
+					loading={isLoading}
+					endIcon={<LoginIcon />}
+					onClick={handleLogin}
+				>
 					Login
 				</LoadingButton>
 			</FormControl>
@@ -73,7 +93,7 @@ const Login: NextPage = () => {
 					</IconButton>
 				</Alert>
 			</Snackbar>
-		</>
+		</LoginContainer>
 	)
 }
 

@@ -1,11 +1,13 @@
-
 @font-face {
 	font-family: "Jost";
 	src: url("/jost.ttf");
-	
 }
 
-html, body {
-	font-family: 'Jost', sans-serif;
+html,
+body,
+body > div:first-child,
+div#__next,
+div#__next > div {
+	font-family: "Jost", sans-serif;
 	height: 100%;
 }
