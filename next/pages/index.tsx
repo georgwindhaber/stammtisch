@@ -3,6 +3,7 @@ import { Avatar, Checkbox, Container, Fab, List, ListItem, ListItemAvatar, ListI
 import { display } from "@mui/system"
 import axios from "axios"
 import type { NextPage } from "next"
+import { useState } from "react"
 import { useUsers } from "../hooks/use-users"
 import { generalStore } from "../stores/general-store"
 import { defaultTheme } from "../styles/theme"
@@ -28,7 +29,21 @@ const FabContainer = styled("div")({
 })
 
 const Home: NextPage = () => {
+	const [selectedUsers, setSelectedUsers] = useState<Array<number>>([])
 	const { users, reload } = useUsers()
+
+	const handleToggle = (event: React.ChangeEvent<HTMLInputElement>, userId: number) => {
+		const currentIndex = selectedUsers.indexOf(userId)
+		const newChecked = [...selectedUsers]
+
+		if (currentIndex === -1) {
+			newChecked.push(userId)
+		} else {
+			newChecked.splice(currentIndex, 1)
+		}
+
+		setSelectedUsers(newChecked)
+	}
 
 	const drink = async (userId: number) => {
 		await axios.post(
@@ -46,7 +61,11 @@ const Home: NextPage = () => {
 				<List dense>
 					{users.map((user) => {
 						return (
-							<ListItem key={user.userId} secondaryAction={<Checkbox edge="end" />} disableGutters>
+							<ListItem
+								key={user.userId}
+								secondaryAction={<Checkbox edge="end" onChange={(event) => handleToggle(event, user.userId)} />}
+								disableGutters
+							>
 								<ListItemAvatar>
 									<Avatar alt="S" />
 								</ListItemAvatar>
