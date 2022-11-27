@@ -29,11 +29,14 @@ drinks.get('/', async (req, res) => {
 drinks.post('/', async (req, res) => {
 	try {
 		const dbClient = await pool.connect()
-		const dbRes = await dbClient.query(
-			'insert into drinks ("drink_type_id", "user_id", "created_at", "updated_at") values ($1, $2, $3, $4)'.toLowerCase(),
-			[req.body.drinkTypeId, req.body.userId, new Date().toISOString(), new Date().toISOString()]
-		)
 
+		let queryString = ''
+		for (const userId of req.body.userIds) {
+			queryString += `insert into drinks ("drink_type_id", "user_id", "created_at", "updated_at") values (${
+				req.body.drinkTypeId
+			}, ${userId}, '${new Date().toISOString()}', '${new Date().toISOString()}');`
+		}
+		const dbRes = await dbClient.query(queryString)
 		dbClient.release()
 
 		if (dbRes) {

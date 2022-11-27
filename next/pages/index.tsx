@@ -3,7 +3,7 @@ import { Avatar, Checkbox, Container, Fab, List, ListItem, ListItemAvatar, ListI
 import { display } from "@mui/system"
 import axios from "axios"
 import type { NextPage } from "next"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useUsers } from "../hooks/use-users"
 import { generalStore } from "../stores/general-store"
 import { defaultTheme } from "../styles/theme"
@@ -32,7 +32,7 @@ const Home: NextPage = () => {
 	const [selectedUsers, setSelectedUsers] = useState<Array<number>>([])
 	const { users, reload } = useUsers()
 
-	const handleToggle = (event: React.ChangeEvent<HTMLInputElement>, userId: number) => {
+	const handleToggle = (userId: number) => {
 		const currentIndex = selectedUsers.indexOf(userId)
 		const newChecked = [...selectedUsers]
 
@@ -45,10 +45,10 @@ const Home: NextPage = () => {
 		setSelectedUsers(newChecked)
 	}
 
-	const drink = async (userId: number) => {
+	const drink = async () => {
 		await axios.post(
 			`${process.env.API_URL}/drinks`,
-			{ userId, drinkTypeId: 1 },
+			{ userIds: selectedUsers, drinkTypeId: 1 },
 			{ headers: { Authorization: `Bearer: ${generalStore.jwt}` } },
 		)
 		reload()
@@ -57,13 +57,13 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Container fixed maxWidth="md">
-				<h1>Stammtisch</h1>
+				<h1>Stammtisch {generalStore.user?.username}</h1>
 				<List dense>
 					{users.map((user) => {
 						return (
 							<ListItem
 								key={user.userId}
-								secondaryAction={<Checkbox edge="end" onChange={(event) => handleToggle(event, user.userId)} />}
+								secondaryAction={<Checkbox edge="end" onChange={() => handleToggle(user.userId)} />}
 								disableGutters
 							>
 								<ListItemAvatar>
@@ -85,7 +85,7 @@ const Home: NextPage = () => {
 					<RemoveDrinkFab color="secondary" size="small">
 						<Remove />
 					</RemoveDrinkFab>
-					<Fab color="primary">
+					<Fab color="primary" onClick={drink}>
 						<SportsBar fontSize="large" />
 					</Fab>
 				</FabContainer>
