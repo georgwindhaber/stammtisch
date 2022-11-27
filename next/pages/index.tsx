@@ -1,15 +1,34 @@
-import { Button } from "@mui/material"
+import { Remove, SportsBar } from "@mui/icons-material"
+import { Avatar, Checkbox, Container, Fab, List, ListItem, ListItemAvatar, ListItemText, styled } from "@mui/material"
+import { display } from "@mui/system"
 import axios from "axios"
-import { runInAction } from "mobx"
 import type { NextPage } from "next"
-import { useLogin } from "../hooks/use-login"
 import { useUsers } from "../hooks/use-users"
 import { generalStore } from "../stores/general-store"
+import { defaultTheme } from "../styles/theme"
+
+const BottomDrawer = styled("section")({
+	position: "absolute",
+	bottom: 10,
+	display: "flex",
+	justifyContent: "center",
+	width: "100%",
+})
+
+const RemoveDrinkFab = styled(Fab)({
+	position: "absolute",
+	left: -8,
+	transform: "translate(-100%, 0)",
+})
+
+const FabContainer = styled("div")({
+	position: "relative",
+	display: "flex",
+	alignItems: "center",
+})
 
 const Home: NextPage = () => {
 	const { users, reload } = useUsers()
-
-	const { isLoggedIn, logout } = useLogin()
 
 	const drink = async (userId: number) => {
 		await axios.post(
@@ -22,15 +41,36 @@ const Home: NextPage = () => {
 
 	return (
 		<>
-			<h1>Stammtisch</h1>
-			{users.map((user) => {
-				return (
-					<div key={user.userId}>
-						{user.username} - {user.drinkCount} <Button onClick={() => drink(user.userId)}>Drink Beer</Button>
-					</div>
-				)
-			})}
-			<Button onClick={logout}>Logout</Button>
+			<Container fixed maxWidth="md">
+				<h1>Stammtisch</h1>
+				<List dense>
+					{users.map((user) => {
+						return (
+							<ListItem key={user.userId} secondaryAction={<Checkbox edge="end" />} disableGutters>
+								<ListItemAvatar>
+									<Avatar alt="S" />
+								</ListItemAvatar>
+								<ListItemText>
+									<span style={{ fontWeight: "bold", color: defaultTheme.palette.primary.main }}>
+										{user.drinkCount}
+									</span>{" "}
+									- <span>{user.username}</span>
+								</ListItemText>
+							</ListItem>
+						)
+					})}
+				</List>
+			</Container>
+			<BottomDrawer>
+				<FabContainer>
+					<RemoveDrinkFab color="secondary" size="small">
+						<Remove />
+					</RemoveDrinkFab>
+					<Fab color="primary">
+						<SportsBar fontSize="large" />
+					</Fab>
+				</FabContainer>
+			</BottomDrawer>
 		</>
 	)
 }
