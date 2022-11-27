@@ -1,5 +1,5 @@
 import { LoadingButton } from "@mui/lab"
-import { Alert, IconButton, Snackbar, TextField } from "@mui/material"
+import { Alert, FormControl, IconButton, Snackbar, TextField, Typography } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import Axios, { AxiosError } from "axios"
 import { NextPage } from "next"
@@ -50,12 +50,14 @@ const Login: NextPage = () => {
 
 	return (
 		<>
-			<h1>Login</h1>
-			<TextField label="Email" onChange={handleEmailChange} />
-			<TextField label="Passwort" type="password" onChange={handlePasswordChange} />
-			<LoadingButton variant="contained" loading={isLoading} onClick={handleLogin}>
-				Login
-			</LoadingButton>
+			<Typography variant="h4">Stammtisch</Typography>
+			<FormControl>
+				<TextField label="Email" onChange={handleEmailChange} />
+				<TextField label="Passwort" type="password" onChange={handlePasswordChange} />
+				<LoadingButton variant="contained" loading={isLoading} onClick={handleLogin}>
+					Login
+				</LoadingButton>
+			</FormControl>
 			<Snackbar open={!!errorMessage} message={errorMessage}>
 				<Alert severity="error">
 					{errorMessage}

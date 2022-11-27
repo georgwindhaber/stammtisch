@@ -1,5 +1,5 @@
 import type { AppProps } from "next/app"
-import { AppBar, ThemeProvider } from "@mui/material"
+import { AppBar, CssBaseline, ThemeProvider } from "@mui/material"
 
 import "../styles/global.scss"
 import { defaultTheme } from "../styles/theme"
@@ -7,6 +7,7 @@ import { defaultTheme } from "../styles/theme"
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<ThemeProvider theme={defaultTheme}>
+			<CssBaseline />
 			<AppBar />
 			<Component {...pageProps} />
 		</ThemeProvider>
