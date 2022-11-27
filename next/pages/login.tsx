@@ -14,6 +14,7 @@ const LoginContainer = styled(Container)({
 	alignItems: "center",
 	justifyContent: "center",
 	flexDirection: "column",
+	height: "100%",
 })
 
 const Login: NextPage = () => {
