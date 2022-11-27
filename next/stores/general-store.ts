@@ -26,7 +26,7 @@ class GeneralStore {
 		try {
 			await makePersistable(this, {
 				name: "general",
-				properties: ["jwt"],
+				properties: ["jwt", "user"],
 				storage: localforage,
 			})
 		} catch (error) {

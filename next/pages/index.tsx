@@ -45,6 +45,12 @@ const Home: NextPage = () => {
 		setSelectedUsers(newChecked)
 	}
 
+	useEffect(() => {
+		if (generalStore.user) {
+			handleToggle(generalStore.user?.userId)
+		}
+	}, [generalStore.user])
+
 	const drink = async () => {
 		await axios.post(
 			`${process.env.API_URL}/drinks`,
@@ -57,13 +63,18 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Container fixed maxWidth="md">
-				<h1>Stammtisch {generalStore.user?.username}</h1>
 				<List dense>
 					{users.map((user) => {
 						return (
 							<ListItem
 								key={user.userId}
-								secondaryAction={<Checkbox edge="end" onChange={() => handleToggle(user.userId)} />}
+								secondaryAction={
+									<Checkbox
+										edge="end"
+										checked={selectedUsers.indexOf(user.userId) !== -1}
+										onChange={() => handleToggle(user.userId)}
+									/>
+								}
 								disableGutters
 							>
 								<ListItemAvatar>
@@ -82,10 +93,10 @@ const Home: NextPage = () => {
 			</Container>
 			<BottomDrawer>
 				<FabContainer>
-					<RemoveDrinkFab color="secondary" size="small">
+					<RemoveDrinkFab color="secondary" size="small" disabled={!selectedUsers.length}>
 						<Remove />
 					</RemoveDrinkFab>
-					<Fab color="primary" onClick={drink}>
+					<Fab color="primary" onClick={drink} disabled={!selectedUsers.length}>
 						<SportsBar fontSize="large" />
 					</Fab>
 				</FabContainer>
