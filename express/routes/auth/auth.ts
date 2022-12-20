@@ -7,10 +7,17 @@ import { mapToCamelCase } from '../../util/helpers'
 
 const auth = express.Router()
 
-const superSecret = 'fkasouefygalsdhbflaiuseghflausegfluawsgefaglsedfluaghsedf'
+const accessTokenSecret = 'fkasouefygalsdhbflaiuseghflausegfluawsgefaglsedfluaghsedf'
+const refreshTokenSecret = 'this_is_going_to_end_up_in_some_password_db_lol'
+
+const accessTokenDuration = 3 * 60 * 1000
+const refreshTokenDuration = 1000 * 60 * 60 * 24 * 30
 
 const generateAccessToken = (username: string) => {
-	return jwt.sign({ username }, superSecret, { expiresIn: 1800 })
+	return jwt.sign({ username }, accessTokenSecret, { expiresIn: accessTokenDuration })
+}
+const generateRefreshToken = (username: string) => {
+	return jwt.sign({ username }, refreshTokenSecret, { expiresIn: refreshTokenDuration })
 }
 
 auth.post('/register', async (req, res) => {
@@ -55,10 +62,12 @@ auth.post('/login', async (req, res) => {
 				return
 			}
 			if (result) {
-				const token = generateAccessToken(req.body.username)
+				const accessToken = generateAccessToken(req.body.username)
+				const refreshToken = generateRefreshToken(req.body.username)
 				dbRes.rows[0].user_password = undefined
 				const frontendUser = mapToCamelCase(dbRes.rows[0])
-				res.cookie('jwt', token, { maxAge: 3 * 60 * 1000, httpOnly: true, secure: true })
+				res.cookie('jwt', accessToken, { maxAge: accessTokenDuration, httpOnly: true, secure: true })
+				res.cookie('refreshToken', refreshToken, { maxAge: refreshTokenDuration, httpOnly: true, secure: true })
 				res.send({ user: frontendUser })
 			} else {
 				res.sendStatus(401)
@@ -75,18 +84,37 @@ auth.post('/logout', (req, res) => {
 })
 
 export const authToken = (req: Request, res: Response, next: NextFunction) => {
-	const token = req.cookies.jwt as string
+	const accessToken = req.cookies.jwt as string
+	const refreshToken = req.cookies.refreshToken as string
 
-	if (!token) {
+	if (!accessToken && !refreshToken) {
 		return res.sendStatus(401)
 	}
 
-	jwt.verify(token, superSecret, (err) => {
+	jwt.verify(accessToken, accessTokenSecret, (err) => {
 		if (err) {
-			return res.sendStatus(403)
-		}
+			if (refreshToken) {
+				jwt.verify(refreshToken, refreshTokenSecret, (err) => {
+					if (err) {
+						res.sendStatus(403)
+					}
 
-		next()
+					const { username } = jwt.decode(refreshToken) as { username: string }
+
+					res.cookie('jwt', generateAccessToken(username), {
+						maxAge: accessTokenDuration,
+						httpOnly: true,
+						secure: true,
+					})
+
+					next()
+				})
+			} else {
+				return res.sendStatus(403)
+			}
+		} else {
+			next()
+		}
 	})
 }
 
