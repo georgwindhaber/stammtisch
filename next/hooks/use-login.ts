@@ -1,3 +1,4 @@
+import Axios from "axios"
 import { runInAction } from "mobx"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -13,10 +14,8 @@ export const useLogin = () => {
 		}
 	}, [isLoggedIn])
 
-	const logout = () => {
-		runInAction(() => {
-			generalStore.jwt = null
-		})
+	const logout = async () => {
+		const logout = await Axios.post(`${process.env.API_URL}/auth/logout`)
 		setIsLoggedIn(false)
 	}
 

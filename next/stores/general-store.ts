@@ -10,7 +10,6 @@ enableStaticRendering(IS_SERVER)
 class GeneralStore {
 	isLoading = false
 	isRehydrated = true
-	jwt: string | null = null
 	user: User | null = null
 
 	constructor() {
@@ -26,7 +25,7 @@ class GeneralStore {
 		try {
 			await makePersistable(this, {
 				name: "general",
-				properties: ["jwt", "user"],
+				properties: ["user"],
 				storage: localforage,
 			})
 		} catch (error) {

@@ -69,6 +69,11 @@ auth.post('/login', async (req, res) => {
 	}
 })
 
+auth.post('/logout', (req, res) => {
+	res.clearCookie('jwt')
+	res.end()
+})
+
 export const authToken = (req: Request, res: Response, next: NextFunction) => {
 	const authHeader = req.headers['authorization']
 	const token = authHeader && authHeader.split(' ')[1]
