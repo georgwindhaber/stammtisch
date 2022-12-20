@@ -9,7 +9,6 @@ export const useUsers = () => {
 	const fetchDrinks = async () => {
 		const users = await axios.get(`${process.env.API_URL}/users`, {
 			withCredentials: true,
-			headers: { Authorization: `Bearer: ${generalStore.jwt}` },
 		})
 
 		setUsers(users.data)
@@ -17,7 +16,7 @@ export const useUsers = () => {
 
 	useEffect(() => {
 		fetchDrinks()
-	}, [generalStore.jwt])
+	}, [generalStore.user])
 
 	return { users, reload: fetchDrinks }
 }

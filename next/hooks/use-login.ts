@@ -1,11 +1,10 @@
 import Axios from "axios"
-import { runInAction } from "mobx"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { generalStore } from "../stores/general-store"
 
 export const useLogin = () => {
-	const [isLoggedIn, setIsLoggedIn] = useState(!!generalStore.jwt)
+	const [isLoggedIn, setIsLoggedIn] = useState(!!generalStore.user)
 	const router = useRouter()
 
 	useEffect(() => {
