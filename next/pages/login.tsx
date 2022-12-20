@@ -34,10 +34,14 @@ const Login: NextPage = () => {
 	const handleLogin = async () => {
 		try {
 			setIsLoading(true)
-			const response = await Axios.post("http://localhost:3003/auth/login", {
-				username: email,
-				password: password,
-			})
+			const response = await Axios.post(
+				"http://localhost:3003/auth/login",
+				{
+					username: email,
+					password: password,
+				},
+				{ withCredentials: true },
+			)
 			if (response) {
 				runInAction(() => {
 					generalStore.user = response.data.user

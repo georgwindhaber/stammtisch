@@ -58,7 +58,8 @@ auth.post('/login', async (req, res) => {
 				const token = generateAccessToken(req.body.username)
 				dbRes.rows[0].user_password = undefined
 				const frontendUser = mapToCamelCase(dbRes.rows[0])
-				res.send({ jwt: token, user: frontendUser })
+				res.cookie('jwt', token, { maxAge: 3 * 60 * 1000, httpOnly: true, secure: true })
+				res.send({ user: frontendUser })
 			} else {
 				res.sendStatus(401)
 			}
