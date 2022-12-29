@@ -1,12 +1,12 @@
 import { Remove, SportsBar } from "@mui/icons-material"
 import { Avatar, Checkbox, Container, Fab, List, ListItem, ListItemAvatar, ListItemText, styled } from "@mui/material"
-import { display } from "@mui/system"
 import axios from "axios"
 import type { NextPage } from "next"
 import { useEffect, useState } from "react"
-import { useUsers } from "../hooks/use-users"
+import { useBackend } from "../hooks/use-backend"
 import { generalStore } from "../stores/general-store"
 import { defaultTheme } from "../styles/theme"
+import { User } from "../types/user"
 
 const BottomDrawer = styled("section")({
 	position: "absolute",
@@ -30,7 +30,7 @@ const FabContainer = styled("div")({
 
 const Home: NextPage = () => {
 	const [selectedUsers, setSelectedUsers] = useState<Array<number>>([])
-	const { users, reload } = useUsers()
+	const { data: users, fetch } = useBackend<User>("/users")
 
 	const handleToggle = (userId: number) => {
 		const currentIndex = selectedUsers.indexOf(userId)
@@ -52,12 +52,8 @@ const Home: NextPage = () => {
 	}, [generalStore.user])
 
 	const drink = async () => {
-		await axios.post(
-			`${process.env.API_URL}/drinks`,
-			{ userIds: selectedUsers, drinkTypeId: 1 },
-			{ headers: { Authorization: `Bearer: ${generalStore.jwt}` } },
-		)
-		reload()
+		await axios.post(`${process.env.API_URL}/drinks`, { userIds: selectedUsers, drinkTypeId: 1 })
+		fetch()
 	}
 
 	return (
