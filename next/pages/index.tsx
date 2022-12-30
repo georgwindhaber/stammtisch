@@ -30,7 +30,11 @@ const FabContainer = styled("div")({
 
 const Home: NextPage = () => {
 	const [selectedUsers, setSelectedUsers] = useState<Array<number>>([])
-	const { data: users, fetch } = useBackend<User>("/users")
+	const { data: users, fetch: fetchUsers } = useBackend<User>("/users")
+	const { fetch: drink } = useBackend<any>("/drinks", {
+		method: "POST",
+		data: { userIds: selectedUsers, drinkTypeId: 1 },
+	})
 
 	const handleToggle = (userId: number) => {
 		const currentIndex = selectedUsers.indexOf(userId)
@@ -51,11 +55,10 @@ const Home: NextPage = () => {
 		}
 	}, [generalStore.user])
 
-	const drink = async () => {
-		await axios.post(`${process.env.API_URL}/drinks`, { userIds: selectedUsers, drinkTypeId: 1 })
-		fetch()
+	const handleDrink = () => {
+		drink()
+		fetchUsers()
 	}
-
 	return (
 		<>
 			<Container fixed maxWidth="md">
@@ -92,7 +95,7 @@ const Home: NextPage = () => {
 					<RemoveDrinkFab color="secondary" size="small" disabled={!selectedUsers.length}>
 						<Remove />
 					</RemoveDrinkFab>
-					<Fab color="primary" onClick={drink} disabled={!selectedUsers.length}>
+					<Fab color="primary" onClick={handleDrink} disabled={!selectedUsers.length}>
 						<SportsBar fontSize="large" />
 					</Fab>
 				</FabContainer>
