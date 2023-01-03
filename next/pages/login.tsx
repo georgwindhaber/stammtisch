@@ -8,6 +8,8 @@ import { ChangeEvent, useState } from "react"
 import { useRouter } from "next/router"
 import { generalStore } from "../stores/general-store"
 import { runInAction } from "mobx"
+import { useBackend } from "../hooks/use-backend"
+import { User } from "../types/user"
 
 const LoginContainer = styled(Container)({
 	display: "flex",
@@ -23,6 +25,14 @@ const Login: NextPage = () => {
 	const [errorMessage, setErrorMessage] = useState("")
 	const [isLoading, setIsLoading] = useState(false)
 	const router = useRouter()
+	const { data: loggedIn, fetch: login } = useBackend<{ user: User }>(
+		"/auth/login",
+		{
+			method: "POST",
+			data: { username: email, password: password },
+		},
+		false,
+	)
 
 	const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setEmail(e.target.value)
@@ -34,22 +44,15 @@ const Login: NextPage = () => {
 	const handleLogin = async () => {
 		try {
 			setIsLoading(true)
-			const response = await Axios.post(
-				"http://localhost:3003/auth/login",
-				{
-					username: email,
-					password: password,
-				},
-				{ withCredentials: true },
-			)
-			if (response) {
+			login()
+			if (loggedIn) {
 				runInAction(() => {
-					generalStore.user = response.data.user
-					generalStore.jwt = response.data.jwt
+					generalStore.user = loggedIn.user
 				})
 				router.push("/")
 			}
 		} catch (err) {
+			console.warn(err)
 			const error = err as AxiosError
 			if (error.response?.status === 401) {
 				setErrorMessage("Falsche Email-Adresse oder Passwort")

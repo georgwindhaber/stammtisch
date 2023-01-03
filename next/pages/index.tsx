@@ -30,7 +30,7 @@ const FabContainer = styled("div")({
 
 const Home: NextPage = () => {
 	const [selectedUsers, setSelectedUsers] = useState<Array<number>>([])
-	const { data: users, fetch: fetchUsers } = useBackend<User>("/users")
+	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/users")
 	const { fetch: drink } = useBackend<any>("/drinks", {
 		method: "POST",
 		data: { userIds: selectedUsers, drinkTypeId: 1 },
@@ -63,31 +63,32 @@ const Home: NextPage = () => {
 		<>
 			<Container fixed maxWidth="md">
 				<List dense>
-					{users.map((user) => {
-						return (
-							<ListItem
-								key={user.userId}
-								secondaryAction={
-									<Checkbox
-										edge="end"
-										checked={selectedUsers.indexOf(user.userId) !== -1}
-										onChange={() => handleToggle(user.userId)}
-									/>
-								}
-								disableGutters
-							>
-								<ListItemAvatar>
-									<Avatar alt="S" />
-								</ListItemAvatar>
-								<ListItemText>
-									<span style={{ fontWeight: "bold", color: defaultTheme.palette.primary.main }}>
-										{user.drinkCount}
-									</span>{" "}
-									- <span>{user.username}</span>
-								</ListItemText>
-							</ListItem>
-						)
-					})}
+					{users &&
+						users.map((user) => {
+							return (
+								<ListItem
+									key={user.userId}
+									secondaryAction={
+										<Checkbox
+											edge="end"
+											checked={selectedUsers.indexOf(user.userId) !== -1}
+											onChange={() => handleToggle(user.userId)}
+										/>
+									}
+									disableGutters
+								>
+									<ListItemAvatar>
+										<Avatar alt="S" />
+									</ListItemAvatar>
+									<ListItemText>
+										<span style={{ fontWeight: "bold", color: defaultTheme.palette.primary.main }}>
+											{user.drinkCount}
+										</span>{" "}
+										- <span>{user.username}</span>
+									</ListItemText>
+								</ListItem>
+							)
+						})}
 				</List>
 			</Container>
 			<BottomDrawer>
