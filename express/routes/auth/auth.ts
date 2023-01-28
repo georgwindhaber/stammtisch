@@ -12,6 +12,7 @@ const refreshTokenSecret = 'this_is_going_to_end_up_in_some_password_db_lol'
 
 const accessTokenDuration = 3 * 60 * 1000
 const refreshTokenDuration = 1000 * 60 * 60 * 24 * 30
+const hashRounds = 10
 
 const generateAccessToken = (username: string) => {
 	return jwt.sign({ username }, accessTokenSecret, { expiresIn: accessTokenDuration })
@@ -21,7 +22,7 @@ const generateRefreshToken = (username: string) => {
 }
 
 auth.post('/register', async (req, res) => {
-	bcrypt.hash(req.body.password, 10, async (err, hash) => {
+	bcrypt.hash(req.body.password, hashRounds, async (err, hash) => {
 		if (err) {
 			res.sendStatus(500)
 			return
