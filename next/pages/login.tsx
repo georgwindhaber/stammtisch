@@ -4,7 +4,7 @@ import { Login as LoginIcon } from "@mui/icons-material"
 import CloseIcon from "@mui/icons-material/Close"
 import Axios, { AxiosError } from "axios"
 import { NextPage } from "next"
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import { generalStore } from "../stores/general-store"
 import { runInAction } from "mobx"
@@ -41,16 +41,19 @@ const Login: NextPage = () => {
 		setPassword(e.target.value)
 	}
 
+	useEffect(() => {
+		if (loggedIn) {
+			runInAction(() => {
+				generalStore.user = loggedIn.user
+			})
+			router.push("/")
+		}
+	}, [loggedIn])
+
 	const handleLogin = async () => {
 		try {
 			setIsLoading(true)
 			login()
-			if (loggedIn) {
-				runInAction(() => {
-					generalStore.user = loggedIn.user
-				})
-				router.push("/")
-			}
 		} catch (err) {
 			console.warn(err)
 			const error = err as AxiosError
