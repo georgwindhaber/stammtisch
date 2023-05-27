@@ -10,6 +10,11 @@ export default async function register(req: NextApiRequest, res: NextApiResponse
 		return
 	}
 
+	if (!req.body.email || !req.body.username || !req.body.password) {
+		res.status(400).end()
+		return
+	}
+
 	const hash = bcrypt.hashSync(req.body.password, parseInt(process.env.HASH_ROUNDS))
 
 	try {
