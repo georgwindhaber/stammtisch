@@ -5,6 +5,11 @@ import bcrypt from "bcrypt"
 const prisma = new PrismaClient()
 
 export default async function register(req: NextApiRequest, res: NextApiResponse) {
+	if (req.method !== "POST") {
+		res.status(405).end()
+		return
+	}
+
 	const hash = bcrypt.hashSync(req.body.password, parseInt(process.env.HASH_ROUNDS))
 
 	try {
