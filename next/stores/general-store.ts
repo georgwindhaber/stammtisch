@@ -1,5 +1,5 @@
 import localforage from "localforage"
-import { makeAutoObservable, runInAction } from "mobx"
+import { autorun, makeAutoObservable, runInAction } from "mobx"
 import { makePersistable } from "mobx-persist-store"
 import { enableStaticRendering } from "mobx-react"
 import { User } from "../types/user"
@@ -10,6 +10,7 @@ enableStaticRendering(IS_SERVER)
 class GeneralStore {
 	isLoading = false
 	isRehydrated = true
+	isLoggedIn = false
 	user: User | null = null
 
 	constructor() {

@@ -1,15 +1,10 @@
 import { LoadingButton } from "@mui/lab"
 import { Alert, Container, FormControl, IconButton, Snackbar, styled, TextField, Typography } from "@mui/material"
-import { Login as LoginIcon } from "@mui/icons-material"
 import CloseIcon from "@mui/icons-material/Close"
-import Axios, { AxiosError } from "axios"
+import { Login as LoginIcon } from "@mui/icons-material"
 import { NextPage } from "next"
 import { ChangeEvent, useEffect, useState } from "react"
-import { useRouter } from "next/router"
-import { generalStore } from "../stores/general-store"
-import { runInAction } from "mobx"
-import { useBackend } from "../hooks/use-backend"
-import { User } from "../types/user"
+import { useLogin } from "../hooks/use-login"
 
 const LoginContainer = styled(Container)({
 	display: "flex",
@@ -22,17 +17,7 @@ const LoginContainer = styled(Container)({
 const Login: NextPage = () => {
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
-	const [errorMessage, setErrorMessage] = useState("")
-	const [isLoading, setIsLoading] = useState(false)
-	const router = useRouter()
-	const { data: loggedIn, fetch: login } = useBackend<{ user: User }>(
-		"/auth/login",
-		{
-			method: "POST",
-			data: { username: email, password: password },
-		},
-		false,
-	)
+	const { login, isLoading, errorMessage } = useLogin(email, password)
 
 	const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setEmail(e.target.value)
@@ -41,30 +26,8 @@ const Login: NextPage = () => {
 		setPassword(e.target.value)
 	}
 
-	useEffect(() => {
-		if (loggedIn) {
-			runInAction(() => {
-				generalStore.user = loggedIn.user
-			})
-			router.push("/")
-		}
-	}, [loggedIn])
-
 	const handleLogin = async () => {
-		try {
-			setIsLoading(true)
-			login()
-		} catch (err) {
-			console.warn(err)
-			const error = err as AxiosError
-			if (error.response?.status === 401) {
-				setErrorMessage("Falsche Email-Adresse oder Passwort")
-			} else {
-				setErrorMessage("Keine verbinding zum Server")
-			}
-		} finally {
-			setIsLoading(false)
-		}
+		login()
 	}
 
 	return (
@@ -97,7 +60,7 @@ const Login: NextPage = () => {
 						aria-label="close"
 						color="inherit"
 						onClick={() => {
-							setErrorMessage("")
+							// setErrorMessage("")
 						}}
 					>
 						<CloseIcon fontSize="small" />
