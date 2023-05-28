@@ -1,8 +1,6 @@
 import Axios, { AxiosError } from "axios"
-import { runInAction } from "mobx"
 import { useRouter } from "next/router"
 import { useState } from "react"
-import { generalStore } from "../stores/general-store"
 import { User } from "../types/user"
 import { useBackend } from "./use-backend"
 
@@ -21,9 +19,6 @@ export const useLogin = (username: string, password: string) => {
 
 	const logout = async () => {
 		await Axios.post(`${process.env.API_URL}/api/auth/logout`)
-		runInAction(() => {
-			generalStore.user = null
-		})
 		router.replace("/login")
 	}
 

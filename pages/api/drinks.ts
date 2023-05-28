@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import { prisma } from "./_base"
 
 export default async function drinks(req: NextApiRequest, res: NextApiResponse) {
 	if (req.method === "GET" && typeof req.query.user === "string") {

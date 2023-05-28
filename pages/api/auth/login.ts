@@ -1,10 +1,8 @@
-import { PrismaClient } from "@prisma/client"
 import { NextApiRequest, NextApiResponse } from "next"
 import { generateAccessToken, generateRefreshToken } from "../helpers/helpers"
 import bcrypt from "bcrypt"
 import { setCookie } from "cookies-next"
-
-const prisma = new PrismaClient()
+import { prisma } from "../_base"
 
 export default async function login(req: NextApiRequest, res: NextApiResponse) {
 	const user = await prisma.user.findUnique({

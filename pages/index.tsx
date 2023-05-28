@@ -1,9 +1,8 @@
 import { Remove, SportsBar } from "@mui/icons-material"
 import { Avatar, Checkbox, Container, Fab, List, ListItem, ListItemAvatar, ListItemText, styled } from "@mui/material"
 import type { NextPage } from "next"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useBackend } from "../hooks/use-backend"
-import { generalStore } from "../stores/general-store"
 import { defaultTheme } from "../styles/theme"
 import { User } from "../types/user"
 
@@ -13,12 +12,6 @@ const BottomDrawer = styled("section")({
 	display: "flex",
 	justifyContent: "center",
 	width: "100%",
-})
-
-const RemoveDrinkFab = styled(Fab)({
-	position: "absolute",
-	left: -8,
-	transform: "translate(-100%, 0)",
 })
 
 const FabContainer = styled("div")({
@@ -32,7 +25,7 @@ const Home: NextPage = () => {
 	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users")
 	const { fetch: drink } = useBackend<any>("/api/drinks", {
 		method: "POST",
-		data: { userIds: selectedUsers, drinkTypeId: 1 },
+		data: { userIds: selectedUsers },
 	})
 
 	const handleToggle = (userId: number) => {
@@ -48,15 +41,9 @@ const Home: NextPage = () => {
 		setSelectedUsers(newChecked)
 	}
 
-	useEffect(() => {
-		if (generalStore.user) {
-			handleToggle(generalStore.user?.userId)
-		}
-	}, [generalStore.user])
-
-	const handleDrink = () => {
-		drink()
-		fetchUsers()
+	const handleDrink = async () => {
+		await drink()
+		await fetchUsers()
 	}
 	return (
 		<>
