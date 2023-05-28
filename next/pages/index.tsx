@@ -29,8 +29,8 @@ const FabContainer = styled("div")({
 
 const Home: NextPage = () => {
 	const [selectedUsers, setSelectedUsers] = useState<Array<number>>([])
-	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/users")
-	const { fetch: drink } = useBackend<any>("/drinks", {
+	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users")
+	const { fetch: drink } = useBackend<any>("/api/drinks", {
 		method: "POST",
 		data: { userIds: selectedUsers, drinkTypeId: 1 },
 	})
