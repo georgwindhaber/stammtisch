@@ -4,7 +4,7 @@ import type { NextPage } from "next"
 import { useState } from "react"
 import { useBackend } from "../hooks/use-backend"
 import { defaultTheme } from "../styles/theme"
-import { User } from "../types/user"
+import type { User } from "@prisma/client"
 
 const BottomDrawer = styled("section")({
 	position: "absolute",
@@ -50,31 +50,33 @@ const Home: NextPage = () => {
 			<Container fixed maxWidth="md">
 				<List dense>
 					{users &&
-						users.map((user) => {
-							return (
-								<ListItem
-									key={user.userId}
-									secondaryAction={
-										<Checkbox
-											edge="end"
-											checked={selectedUsers.indexOf(user.userId) !== -1}
-											onChange={() => handleToggle(user.userId)}
-										/>
-									}
-									disableGutters
-								>
-									<ListItemAvatar>
-										<Avatar alt="S" />
-									</ListItemAvatar>
-									<ListItemText>
-										<span style={{ fontWeight: "bold", color: defaultTheme.palette.primary.main }}>
-											{user.drinkCount}
-										</span>{" "}
-										- <span>{user.username}</span>
-									</ListItemText>
-								</ListItem>
-							)
-						})}
+						users
+							.sort((a, b) => b.drinkCount - a.drinkCount)
+							.map((user) => {
+								return (
+									<ListItem
+										key={user.userId}
+										secondaryAction={
+											<Checkbox
+												edge="end"
+												checked={selectedUsers.indexOf(user.userId) !== -1}
+												onChange={() => handleToggle(user.userId)}
+											/>
+										}
+										disableGutters
+									>
+										<ListItemAvatar>
+											<Avatar alt="S" />
+										</ListItemAvatar>
+										<ListItemText>
+											<span style={{ fontWeight: "bold", color: defaultTheme.palette.primary.main }}>
+												{user.drinkCount}
+											</span>{" "}
+											- <span>{user.username}</span>
+										</ListItemText>
+									</ListItem>
+								)
+							})}
 				</List>
 			</Container>
 			<BottomDrawer>
