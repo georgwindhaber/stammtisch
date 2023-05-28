@@ -3,7 +3,7 @@ import { Alert, Container, FormControl, IconButton, Snackbar, styled, TextField,
 import CloseIcon from "@mui/icons-material/Close"
 import { Login as LoginIcon } from "@mui/icons-material"
 import { NextPage } from "next"
-import { ChangeEvent, useEffect, useState } from "react"
+import { ChangeEvent } from "react"
 import { useLogin } from "../hooks/use-login"
 
 const LoginContainer = styled(Container)({
@@ -15,12 +15,10 @@ const LoginContainer = styled(Container)({
 })
 
 const Login: NextPage = () => {
-	const [email, setEmail] = useState("")
-	const [password, setPassword] = useState("")
-	const { login, isLoading, errorMessage } = useLogin(email, password)
+	const { login, isLoading, errorMessage, setPassword, setUsername, username, password } = useLogin()
 
 	const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setEmail(e.target.value)
+		setUsername(e.target.value)
 	}
 	const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setPassword(e.target.value)

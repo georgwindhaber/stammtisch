@@ -1,11 +1,13 @@
 import Axios, { AxiosError } from "axios"
 import { useRouter } from "next/router"
 import { useState } from "react"
-import { User } from "../types/user"
 import { useBackend } from "./use-backend"
+import type { User } from "@prisma/client"
 
-export const useLogin = (username: string, password: string) => {
+export const useLogin = () => {
 	const [isLoading, setIsLoading] = useState(false)
+	const [username, setUsername] = useState("")
+	const [password, setPassword] = useState("")
 	const [errorMessage, setErrorMessage] = useState("")
 	const { fetch: fetchLogin } = useBackend<{ user: User }>(
 		"/api/auth/login",
@@ -43,6 +45,10 @@ export const useLogin = (username: string, password: string) => {
 	return {
 		isLoading,
 		errorMessage,
+		username,
+		password,
+		setUsername,
+		setPassword,
 		logout,
 		login,
 	}
