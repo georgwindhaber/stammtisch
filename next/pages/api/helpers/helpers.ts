@@ -1,14 +1,19 @@
 import jwt from "jsonwebtoken"
+import * as jose from "jose"
 
-const generateAccessToken = (username: string) => {
-	return jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, {
-		expiresIn: parseInt(process.env.ACCESS_TOKEN_DURATION),
-	})
+const generateAccessToken = async (username: string) => {
+	return await new jose.SignJWT({ username })
+		.setProtectedHeader({ alg: "HS256" })
+		.setIssuedAt()
+		.setExpirationTime("6h")
+		.sign(new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET))
 }
-const generateRefreshToken = (username: string) => {
-	return jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, {
-		expiresIn: parseInt(process.env.REFRESH_TOKEN_DURATION),
-	})
+const generateRefreshToken = async (username: string) => {
+	return await new jose.SignJWT({ username })
+		.setProtectedHeader({ alg: "HS256" })
+		.setIssuedAt()
+		.setExpirationTime("8d")
+		.sign(new TextEncoder().encode(process.env.REFRESH_TOKEN_SECRET))
 }
 
 export { generateAccessToken, generateRefreshToken }

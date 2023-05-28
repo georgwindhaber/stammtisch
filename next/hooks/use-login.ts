@@ -11,7 +11,7 @@ export const useLogin = (username: string, password: string) => {
 	const [isLoading, setIsLoading] = useState(false)
 	const [errorMessage, setErrorMessage] = useState("")
 	const { data: loginResponse, fetch: fetchLogin } = useBackend<{ user: User }>(
-		"/auth/login",
+		"/api/auth/login",
 		{
 			method: "POST",
 			data: { username, password },
@@ -36,7 +36,7 @@ export const useLogin = (username: string, password: string) => {
 					generalStore.user = loginResponse?.user
 				})
 			}
-			router.push("/")
+			// router.push("/")
 		} else {
 			console.log("login redirect")
 			router.replace("/login")
@@ -47,8 +47,9 @@ export const useLogin = (username: string, password: string) => {
 		try {
 			setIsLoading(true)
 			await fetchLogin()
-			console.log(loginResponse)
 			setIsLoggedIn(true)
+			router.push("/")
+			console.log("login")
 		} catch (err) {
 			console.warn(err)
 			const error = err as AxiosError
