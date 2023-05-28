@@ -92,9 +92,6 @@ const Home: NextPage = () => {
 			</Container>
 			<BottomDrawer>
 				<FabContainer>
-					<RemoveDrinkFab color="secondary" size="small" disabled={!selectedUsers.length}>
-						<Remove />
-					</RemoveDrinkFab>
 					<Fab color="primary" onClick={handleDrink} disabled={!selectedUsers.length}>
 						<SportsBar fontSize="large" />
 					</Fab>
