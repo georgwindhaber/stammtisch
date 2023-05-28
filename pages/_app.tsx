@@ -4,13 +4,9 @@ import { AppBar, Button, CssBaseline, ThemeProvider, Toolbar, Typography } from 
 import "../styles/global.scss"
 import { defaultTheme } from "../styles/theme"
 import { useLogin } from "../hooks/use-login"
-import { useRouter } from "next/router"
-import { useEffect } from "react"
-import { generalStore } from "../stores/general-store"
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const { logout } = useLogin()
-	const router = useRouter()
 
 	return (
 		<ThemeProvider theme={defaultTheme}>
