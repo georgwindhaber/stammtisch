@@ -21,7 +21,7 @@ export const useLogin = (username: string, password: string) => {
 	const router = useRouter()
 
 	const logout = async () => {
-		const logout = await Axios.post(`${process.env.API_URL}/auth/logout`)
+		const logout = await Axios.post(`${process.env.API_URL}/api/auth/logout`)
 		runInAction(() => {
 			generalStore.user = null
 		})
@@ -39,7 +39,6 @@ export const useLogin = (username: string, password: string) => {
 			// router.push("/")
 		} else {
 			console.log("login redirect")
-			router.replace("/login")
 		}
 	}, [isLoggedIn])
 
@@ -49,7 +48,6 @@ export const useLogin = (username: string, password: string) => {
 			await fetchLogin()
 			setIsLoggedIn(true)
 			router.push("/")
-			console.log("login")
 		} catch (err) {
 			console.warn(err)
 			const error = err as AxiosError

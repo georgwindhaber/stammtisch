@@ -5,8 +5,6 @@ import { generateAccessToken } from "./pages/api/helpers/helpers"
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(req: NextRequest) {
-	if (req.url.startsWith("/login")) return NextResponse.next()
-
 	const accessToken = req.cookies.get("jwt")?.value || ""
 	const refreshToken = req.cookies.get("refreshToken")?.value
 
@@ -43,5 +41,5 @@ export async function middleware(req: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-	matcher: "/((?!login|static|favicon.ico|_next).*)",
+	matcher: "/",
 }

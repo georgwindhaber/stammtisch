@@ -12,12 +12,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 	const { logout } = useLogin()
 	const router = useRouter()
 
-	useEffect(() => {
-		if (!generalStore.isLoggedIn) {
-			router.replace("/login")
-		}
-	}, [generalStore.isLoggedIn])
-
 	return (
 		<ThemeProvider theme={defaultTheme}>
 			<CssBaseline />
