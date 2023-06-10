@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useBackend } from "../hooks/use-backend"
 import { defaultTheme } from "../styles/theme"
 import type { User } from "@prisma/client"
+import { ListItemUser } from "../components/ListItemUser"
 
 const BottomDrawer = styled("section")({
 	position: "absolute",
@@ -66,15 +67,7 @@ const Home: NextPage = () => {
 										}
 										disableGutters
 									>
-										<ListItemAvatar>
-											<Avatar alt="S" />
-										</ListItemAvatar>
-										<ListItemText>
-											<span style={{ fontWeight: "bold", color: defaultTheme.palette.primary.main }}>
-												{user.drinkCount}
-											</span>{" "}
-											- <span>{user.username}</span>
-										</ListItemText>
+										<ListItemUser user={user} />
 									</ListItem>
 								)
 							})}

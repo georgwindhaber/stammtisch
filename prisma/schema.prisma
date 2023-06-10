@@ -11,18 +11,29 @@ datasource db {
 }
 
 model User {
-  userId       Int      @id @default(autoincrement())
-  email        String   @unique
+  userId       Int        @id @default(autoincrement())
+  email        String     @unique
   userPassword String
   username     String
   drinks       Drinks[]
-  drinkCount   Int      @default(0)
+  drinkCount   Int        @default(0)
+  Payments     Payments[]
+  paymentSum   Int        @default(0)
 }
 
 model Drinks {
   drinkId   Int      @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [userId])
   userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payments {
+  paymentId Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [userId])
+  userId    Int
+  amount    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
