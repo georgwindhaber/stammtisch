@@ -5,6 +5,7 @@ import { Login as LoginIcon } from "@mui/icons-material"
 import { NextPage } from "next"
 import { ChangeEvent } from "react"
 import { useLogin } from "../hooks/use-login"
+import { useRouter } from "next/router"
 
 const LoginContainer = styled(Container)({
 	display: "flex",
@@ -15,7 +16,8 @@ const LoginContainer = styled(Container)({
 })
 
 const Login: NextPage = () => {
-	const { login, isLoading, errorMessage, setPassword, setUsername, username, password } = useLogin()
+	const { login, isLoading, errorMessage, setPassword, setUsername } = useLogin()
+	const router = useRouter()
 
 	const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setUsername(e.target.value)
@@ -26,6 +28,7 @@ const Login: NextPage = () => {
 
 	const handleLogin = async () => {
 		login()
+		router.push("/")
 	}
 
 	return (

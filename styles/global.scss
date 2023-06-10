@@ -10,3 +10,9 @@ div#__next {
 	font-family: "Jost", sans-serif;
 	height: 100%;
 }
+
+div#__next {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}

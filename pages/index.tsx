@@ -1,4 +1,4 @@
-import { Remove, SportsBar } from "@mui/icons-material"
+import { SportsBar } from "@mui/icons-material"
 import { Avatar, Checkbox, Container, Fab, List, ListItem, ListItemAvatar, ListItemText, styled } from "@mui/material"
 import type { NextPage } from "next"
 import { useState } from "react"
