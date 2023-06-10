@@ -1,6 +1,5 @@
-import { Container, List, ListItem, Checkbox, ListItemAvatar, Avatar, ListItemText } from "@mui/material"
+import { Container, List, ListItem, Input } from "@mui/material"
 import type { NextPage } from "next"
-import { defaultTheme } from "../styles/theme"
 import { useBackend } from "../hooks/use-backend"
 import { User } from "@prisma/client"
 import { ListItemUser } from "../components/ListItemUser"
@@ -16,7 +15,11 @@ const Bezahlt: NextPage = () => {
 						.sort((a, b) => b.drinkCount - a.drinkCount)
 						.map((user) => {
 							return (
-								<ListItem key={user.userId} disableGutters>
+								<ListItem
+									key={user.userId}
+									disableGutters
+									secondaryAction={<Input type="number" size="small" placeholder="100" />}
+								>
 									<ListItemUser user={user} valueType="payments" />
 								</ListItem>
 							)
