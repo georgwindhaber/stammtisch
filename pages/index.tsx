@@ -42,6 +42,7 @@ const Home: NextPage = () => {
 	}
 
 	const handleDrink = async () => {
+		setSelectedUsers([])
 		await drink()
 		await fetchUsers()
 	}
