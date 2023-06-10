@@ -74,13 +74,15 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<Content>
 				<Component {...pageProps} />
 			</Content>
-			<AppBar position="sticky" sx={{ top: "auto", bottom: 0 }}>
-				<BottomNavigation showLabels value={value} onChange={handleFooterClick}>
-					<BottomNavigationAction label="Getränke" icon={<SportsBar />} />
-					<BottomNavigationAction label="Bezahlt" icon={<Euro />} />
-					<BottomNavigationAction label="Runden" icon={<People />} />
-				</BottomNavigation>
-			</AppBar>
+			{router.pathname !== "/login" && (
+				<AppBar position="sticky" sx={{ top: "auto", bottom: 0 }}>
+					<BottomNavigation showLabels value={value} onChange={handleFooterClick}>
+						<BottomNavigationAction label="Getränke" icon={<SportsBar />} />
+						<BottomNavigationAction label="Bezahlt" icon={<Euro />} />
+						<BottomNavigationAction label="Runden" icon={<People />} />
+					</BottomNavigation>
+				</AppBar>
+			)}
 		</ThemeProvider>
 	)
 }
