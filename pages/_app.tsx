@@ -61,7 +61,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<CssBaseline />
 			<AppBar position="sticky">
 				<Toolbar>
-					<Typography variant="h6">Stammtisch</Typography>
+					<Typography variant="h6" sx={{ flexGrow: 1 }}>
+						Stammtisch
+					</Typography>
 					{router.pathname !== "/login" && (
 						<Button variant="contained" onClick={logout}>
 							Logout
