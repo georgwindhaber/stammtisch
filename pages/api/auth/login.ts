@@ -12,6 +12,11 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
 	})
 
 	if (user) {
+		if (!user.active) {
+			res.status(403).end()
+			return
+		}
+
 		const result = bcrypt.compareSync(req.body.password, user.userPassword)
 
 		if (result) {

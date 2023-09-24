@@ -34,6 +34,8 @@ export const useLogin = () => {
 			const error = err as AxiosError
 			if (error.response?.status === 401) {
 				setErrorMessage("Falsche Email-Adresse oder Passwort")
+			} else if (error.response?.status === 403) {
+				setErrorMessage("Ihr Konto wurde noch nicht von einem Admin aktiviert")
 			} else {
 				setErrorMessage("Keine verbinding zum Server")
 			}

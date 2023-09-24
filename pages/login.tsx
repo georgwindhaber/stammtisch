@@ -54,19 +54,7 @@ const Login: NextPage = () => {
 				</LoadingButton>
 			</FormControl>
 			<Snackbar open={!!errorMessage} message={errorMessage}>
-				<Alert severity="error">
-					{errorMessage}
-					<IconButton
-						size="small"
-						aria-label="close"
-						color="inherit"
-						onClick={() => {
-							// setErrorMessage("")
-						}}
-					>
-						<CloseIcon fontSize="small" />
-					</IconButton>
-				</Alert>
+				<Alert severity="error">{errorMessage}</Alert>
 			</Snackbar>
 		</LoginContainer>
 	)
