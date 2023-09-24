@@ -6,20 +6,8 @@ import { useBackend } from "../hooks/use-backend"
 import { defaultTheme } from "../styles/theme"
 import type { User } from "@prisma/client"
 import { ListItemUser } from "../components/ListItemUser"
-
-const BottomDrawer = styled("section")({
-	position: "absolute",
-	bottom: 10,
-	display: "flex",
-	justifyContent: "center",
-	width: "100%",
-})
-
-const FabContainer = styled("div")({
-	position: "relative",
-	display: "flex",
-	alignItems: "center",
-})
+import { BottomDrawer } from "../components/UserLists/BottomDrawer"
+import { FabContainer } from "../components/UserLists/FabContainer"
 
 const Home: NextPage = () => {
 	const [selectedUsers, setSelectedUsers] = useState<Array<number>>([])

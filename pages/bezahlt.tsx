@@ -5,20 +5,8 @@ import { User } from "@prisma/client"
 import { ListItemUser } from "../components/ListItemUser"
 import { Euro, SportsBar } from "@mui/icons-material"
 import { useState } from "react"
-
-const BottomDrawer = styled("section")({
-	position: "absolute",
-	bottom: 10,
-	display: "flex",
-	justifyContent: "center",
-	width: "100%",
-})
-
-const FabContainer = styled("div")({
-	position: "relative",
-	display: "flex",
-	alignItems: "center",
-})
+import { BottomDrawer } from "../components/UserLists/BottomDrawer"
+import { FabContainer } from "../components/UserLists/FabContainer"
 
 const Bezahlt: NextPage = () => {
 	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users")
