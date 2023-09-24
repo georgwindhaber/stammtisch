@@ -9,7 +9,7 @@ export default async function register(req: NextApiRequest, res: NextApiResponse
 		return
 	}
 
-	if (!req.body.email || !req.body.username || !req.body.password) {
+	if (!req.body.email || !req.body.username || !req.body.password || !req.body.registrationSecret) {
 		res.status(400).end()
 		return
 	}
@@ -22,6 +22,11 @@ export default async function register(req: NextApiRequest, res: NextApiResponse
 				email: req.body.email,
 				username: req.body.username,
 				userPassword: hash,
+				registrationSecret: req.body.registrationSecret,
+				roles:
+					req.body.registerAsAdminSecret && req.body.registerAsAdminSecret === process.env.REGISTER_AS_ADMIN_SECRET
+						? ["ADMIN"]
+						: [],
 			},
 		})
 		res.send(newUser)

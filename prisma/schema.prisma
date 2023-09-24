@@ -11,16 +11,21 @@ datasource db {
 }
 
 model User {
-  userId       Int        @id @default(autoincrement())
-  email        String     @unique
-  userPassword String
-  username     String
-  drinks       Drinks[]
-  drinkCount   Int        @default(0)
-  Payments     Payments[]
-  paymentSum   Int        @default(0)
-  Events       Events[]
-  eventCount   Int        @default(0)
+  userId             Int        @id @default(autoincrement())
+  email              String     @unique
+  userPassword       String
+  username           String
+  drinks             Drinks[]
+  drinkCount         Int        @default(0)
+  Payments           Payments[]
+  paymentSum         Int        @default(0)
+  Events             Events[]
+  eventCount         Int        @default(0)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  registrationSecret String
+  roles              String[]
+  active             Boolean    @default(false)
 }
 
 model Drinks {

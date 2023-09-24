@@ -23,6 +23,8 @@ const Content = styled("main")({
 	flex: 1,
 })
 
+const notLoggedInRoutes = ["/login", "/registration"]
+
 function MyApp({ Component, pageProps }: AppProps) {
 	const { logout } = useLogin()
 	const [value, setValue] = useState(0)
@@ -64,7 +66,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 					<Typography variant="h6" sx={{ flexGrow: 1 }}>
 						Stammtisch
 					</Typography>
-					{router.pathname !== "/login" && (
+					{!notLoggedInRoutes.includes(router.pathname) && (
 						<Button variant="contained" onClick={logout}>
 							Logout
 						</Button>
@@ -74,7 +76,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<Content>
 				<Component {...pageProps} />
 			</Content>
-			{router.pathname !== "/login" && (
+			{!notLoggedInRoutes.includes(router.pathname) && (
 				<AppBar position="sticky" sx={{ top: "auto", bottom: 0 }}>
 					<BottomNavigation showLabels value={value} onChange={handleFooterClick}>
 						<BottomNavigationAction label="Getränke" icon={<SportsBar />} />
