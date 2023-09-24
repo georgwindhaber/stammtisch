@@ -79,7 +79,7 @@ const Registration: NextPage = () => {
 		} catch (error) {
 			if (error instanceof AxiosError) {
 				if (error.response?.status === 400) {
-					setErrorMessage("Diese Email Addresse ist bereits in verwendung")
+					setErrorMessage("Nicht alle Felder ausgefüllt oder diese Email Addresse ist bereits in verwendung")
 				}
 			} else {
 				setErrorMessage("Ein unbekannter Fehler ist aufgetreten")
