@@ -13,7 +13,6 @@ export default async function payments(req: NextApiRequest, res: NextApiResponse
 	} else if (req.method === "POST") {
 		const requests = []
 		for (const userPayment of req.body.userPayments) {
-			console.log(userPayment)
 			requests.push(
 				prisma.payments.create({
 					data: {

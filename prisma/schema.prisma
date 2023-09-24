@@ -19,10 +19,20 @@ model User {
   drinkCount   Int        @default(0)
   Payments     Payments[]
   paymentSum   Int        @default(0)
+  Events       Events[]
+  eventCount   Int        @default(0)
 }
 
 model Drinks {
   drinkId   Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [userId])
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Events {
+  eventId   Int      @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [userId])
   userId    Int
   createdAt DateTime @default(now())

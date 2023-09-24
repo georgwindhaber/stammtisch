@@ -12,10 +12,14 @@ import { FabContainer } from "../components/UserLists/FabContainer"
 const Home: NextPage = () => {
 	const [selectedUsers, setSelectedUsers] = useState<Array<number>>([])
 	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users")
-	const { fetch: drink } = useBackend<any>("/api/drinks", {
-		method: "POST",
-		data: { userIds: selectedUsers },
-	})
+	const { fetch: drink } = useBackend<any>(
+		"/api/drinks",
+		{
+			method: "POST",
+			data: { userIds: selectedUsers },
+		},
+		false,
+	)
 
 	const handleToggle = (userId: number) => {
 		const currentIndex = selectedUsers.indexOf(userId)
