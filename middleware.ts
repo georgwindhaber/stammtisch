@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import * as jose from "jose"
-import { generateAccessToken } from "./pages/api/helpers/helpers"
+import { generateAccessToken, verifyAccessToken, verifyRefreshToken } from "./pages/api/helpers/helpers"
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(req: NextRequest) {
@@ -15,14 +15,15 @@ export async function middleware(req: NextRequest) {
 	const response = NextResponse.next()
 
 	try {
-		await jose.jwtVerify(accessToken, new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET))
+		const { payload } = await verifyAccessToken(accessToken)
+
+		if (req.url === "/admin" && Array.isArray(payload.roles) && payload.roles.includes("admin")) {
+			return NextResponse.redirect(new URL("/login", req.url))
+		}
 	} catch (err) {
 		if (err instanceof jose.errors.JWTExpired && refreshToken) {
 			try {
-				const { payload } = await jose.jwtVerify(
-					refreshToken,
-					new TextEncoder().encode(process.env.REFRESH_TOKEN_SECRET),
-				)
+				const { payload } = await verifyRefreshToken(refreshToken)
 
 				response.cookies.set("jwt", await generateAccessToken(payload.username as string), {
 					maxAge: parseInt(process.env.ACCESS_TOKEN_DURATION),
@@ -41,5 +42,5 @@ export async function middleware(req: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-	matcher: ["/", "/bezahlt", "/runden"],
+	matcher: ["/", "/bezahlt", "/runden", "/admin"],
 }

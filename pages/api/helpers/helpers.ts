@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken"
 import * as jose from "jose"
 
 const generateAccessToken = async (username: string) => {
@@ -16,4 +15,11 @@ const generateRefreshToken = async (username: string) => {
 		.sign(new TextEncoder().encode(process.env.REFRESH_TOKEN_SECRET))
 }
 
-export { generateAccessToken, generateRefreshToken }
+const verifyAccessToken = async (token: string) => {
+	return await jose.jwtVerify(token, new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET))
+}
+const verifyRefreshToken = async (token: string) => {
+	return await jose.jwtVerify(token, new TextEncoder().encode(process.env.REFRESH_TOKEN_SECRET))
+}
+
+export { generateAccessToken, generateRefreshToken, verifyAccessToken, verifyRefreshToken }
