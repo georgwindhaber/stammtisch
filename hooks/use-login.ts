@@ -16,7 +16,7 @@ export const useLogin = () => {
 	const router = useRouter()
 
 	const logout = async () => {
-		await Axios.post(`${process.env.API_URL}/api/auth/logout`)
+		await Axios.post("/api/auth/logout")
 		router.replace("/login")
 	}
 

@@ -7,7 +7,7 @@ export const useBackend = <T>(path: string, config?: AxiosRequestConfig, initial
 
 	const fetch = async () => {
 		setIsLoading(true)
-		const response = await Axios(`${process.env.API_URL}${path}`, { ...config, withCredentials: true })
+		const response = await Axios(path, { ...config, withCredentials: true })
 
 		setData(response.data)
 		setIsLoading(false)
