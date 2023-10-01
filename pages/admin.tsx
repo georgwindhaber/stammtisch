@@ -3,14 +3,32 @@ import { verifyAccessToken } from "./api/helpers/helpers"
 import { prisma } from "./api/_base"
 import { User } from "@prisma/client"
 import { parseISO, format } from "date-fns"
-import { Avatar, Container, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material"
+import {
+	Avatar,
+	Button,
+	Container,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	Fab,
+	List,
+	ListItem,
+	ListItemAvatar,
+	ListItemText,
+	styled,
+} from "@mui/material"
+import { Check, Clear } from "@mui/icons-material"
+import { useState } from "react"
+
+type InactiveUser = Pick<User, "userId" | "email" | "username" | "registrationSecret"> & { createdAt: string }
 
 type AdminPageProps = {
 	isAdmin: boolean
-	inactiveUsers?: Array<Pick<User, "userId" | "email" | "username" | "registrationSecret"> & { createdAt: string }>
+	inactiveUsers?: InactiveUser[]
 }
 
-export const getServerSideProps = (async (context) => {
+export const getServerSideProps = async (context) => {
 	if (!context.req.cookies.jwt) {
 		return {
 			redirect: {
@@ -75,9 +93,35 @@ export const getServerSideProps = (async (context) => {
 			},
 		}
 	}
-}) satisfies GetServerSideProps<AdminPageProps>
+}
+// ) satisfies GetServerSideProps<AdminPageProps>
+
+const UserInfo = styled("div")({
+	marginBottom: "0.5rem",
+})
+
+const UserInfoLabel = styled("span")({
+	fontWeight: "bold",
+})
 
 const Admin: NextPage<AdminPageProps> = ({ inactiveUsers }) => {
+	const [userToDecline, setUserToDecline] = useState<InactiveUser | null>(null)
+	const [userToAccept, setUserToAccept] = useState<InactiveUser | null>(null)
+
+	const declineUser = async () => {
+		if (!userToDecline) return
+		await fetch(`/api/users/${userToDecline.userId}`, {
+			method: "DELETE",
+		})
+		setUserToDecline(null)
+	}
+
+	const acceptUser = async (user: { userId: number }) => {
+		await fetch(`/api/users/${user.userId}`, {
+			method: "PUT",
+		})
+	}
+
 	return (
 		<Container fixed maxWidth="md">
 			<List dense>
@@ -100,10 +144,49 @@ const Admin: NextPage<AdminPageProps> = ({ inactiveUsers }) => {
 											</>
 										}
 									/>
+									<Fab
+										size="small"
+										color="secondary"
+										sx={{ marginRight: "0.75rem" }}
+										onClick={() => setUserToDecline(user)}
+									>
+										<Clear />
+									</Fab>
+									<Fab size="small" color="primary" onClick={() => acceptUser(user)}>
+										<Check />
+									</Fab>
 								</ListItem>
 							)
 						})}
 			</List>
+			<Dialog open={!!userToDecline} onClose={() => {}}>
+				{userToDecline && (
+					<>
+						<DialogTitle>"{userToDecline.username}" nicht annehmen?</DialogTitle>
+						<DialogContent>
+							<UserInfo>
+								<UserInfoLabel>Name:</UserInfoLabel> {userToDecline.username}
+							</UserInfo>
+							<UserInfo>
+								<UserInfoLabel>Email:</UserInfoLabel> {userToDecline.email}
+							</UserInfo>
+							<UserInfo>
+								<UserInfoLabel>Registrierungscode:</UserInfoLabel> {userToDecline.registrationSecret}
+							</UserInfo>
+							<UserInfo>
+								<UserInfoLabel>Erstellt am:</UserInfoLabel>{" "}
+								{format(parseISO(userToDecline.createdAt.toString()), "dd.MM.yyyy hh:mm")}
+							</UserInfo>
+						</DialogContent>
+						<DialogActions>
+							<Button onClick={() => setUserToDecline(null)}>Abbrechen</Button>
+							<Button color="error" onClick={declineUser}>
+								"{userToDecline?.username}" Ablehnen
+							</Button>
+						</DialogActions>
+					</>
+				)}
+			</Dialog>
 		</Container>
 	)
 }
