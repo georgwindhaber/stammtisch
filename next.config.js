@@ -3,9 +3,9 @@ const nextConfig = {
 	reactStrictMode: true,
 	swcMinify: true,
 
-	env: {
-		API_URL: "http://localhost:3000",
-	},
+	// env: {
+	// 	API_URL: "http://localhost:3000",
+	// },
 }
 
 module.exports = nextConfig
