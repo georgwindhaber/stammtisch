@@ -2,7 +2,7 @@ import { User } from "@prisma/client"
 import type { NextPage } from "next"
 import { useBackend } from "../hooks/use-backend"
 import { People } from "@mui/icons-material"
-import { Container, List, ListItem, Input, Fab, Radio } from "@mui/material"
+import { Container, List, ListItem, Fab, Radio } from "@mui/material"
 import { ListItemUser } from "../components/ListItemUser"
 import { BottomDrawer } from "../components/UserLists/BottomDrawer"
 import { FabContainer } from "../components/UserLists/FabContainer"
@@ -11,7 +11,7 @@ import { useState } from "react"
 const Runden: NextPage = () => {
 	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users", {}, true)
 	const [selectedUser, setSelectedUser] = useState<number | null>(null)
-	const { fetch: events } = useBackend<any>("/api/events", {
+	const { fetch: events } = useBackend("/api/events", {
 		method: "POST",
 		data: { userId: selectedUser },
 	})

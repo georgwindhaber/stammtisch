@@ -40,7 +40,7 @@ const Registration: NextPage = () => {
 	const [isDone, setIsDone] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 
-	const { fetch: register } = useBackend<any>("/api/auth/register", {
+	const { fetch: register } = useBackend("/api/auth/register", {
 		method: "POST",
 		data: { email, username, password, confirmPassword, registrationSecret: secret },
 	})

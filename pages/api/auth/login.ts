@@ -22,7 +22,7 @@ export default async function login(req: NextApiRequest, res: NextApiResponse) {
 		if (result) {
 			const accessToken = await generateAccessToken(req.body.username)
 			const refreshToken = await generateRefreshToken(req.body.username)
-			const { userPassword, ...frontendUser } = user
+			const { ...frontendUser } = user
 			setCookie("jwt", accessToken, {
 				req,
 				res,

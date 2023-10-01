@@ -11,7 +11,7 @@ import { FabContainer } from "../components/UserLists/FabContainer"
 const Home: NextPage = () => {
 	const [selectedUsers, setSelectedUsers] = useState<Array<number>>([])
 	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users", {}, true)
-	const { fetch: drink } = useBackend<any>("/api/drinks", {
+	const { fetch: drink } = useBackend("/api/drinks", {
 		method: "POST",
 		data: { userIds: selectedUsers },
 	})

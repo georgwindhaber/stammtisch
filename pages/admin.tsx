@@ -52,7 +52,7 @@ const UserConfirmation = ({
 	return (
 		<Dialog open={!!user} onClose={onCancel}>
 			<DialogTitle>
-				"{user.username}" {!isAccepting && "nicht"} annehmen?
+				&quot;{user.username}&quot; {!isAccepting && "nicht"} annehmen?
 			</DialogTitle>
 			<DialogContent>
 				<UserInfo>
@@ -73,7 +73,7 @@ const UserConfirmation = ({
 					Abbrechen
 				</Button>
 				<LoadingButton loading={isLoading} color={isAccepting ? "primary" : "error"} onClick={onAccept}>
-					"{user.username}" {isAccepting ? "Annehmen" : "Ablehnen"}
+					&quot;{user.username}&quot; {isAccepting ? "Annehmen" : "Ablehnen"}
 				</LoadingButton>
 			</DialogActions>
 		</Dialog>
@@ -89,18 +89,15 @@ const Admin: NextPage<AdminPageProps> = () => {
 		true,
 	)
 	const [userToDecline, setUserToDecline] = useState<InactiveUser | null>(null)
-	const { fetch: deleteUser, isLoading: isDeleteUserLoading } = useBackend<any>(`/api/users/${userToDecline?.userId}`, {
+	const { fetch: deleteUser, isLoading: isDeleteUserLoading } = useBackend(`/api/users/${userToDecline?.userId}`, {
 		method: "DELETE",
 	})
 
 	const [userToAccept, setUserToAccept] = useState<InactiveUser | null>(null)
-	const { fetch: activateUser, isLoading: isAcceptingUserLoading } = useBackend<any>(
-		`/api/users/${userToAccept?.userId}`,
-		{
-			method: "PUT",
-			data: { active: true },
-		},
-	)
+	const { fetch: activateUser, isLoading: isAcceptingUserLoading } = useBackend(`/api/users/${userToAccept?.userId}`, {
+		method: "PUT",
+		data: { active: true },
+	})
 
 	const declineUser = async () => {
 		if (!userToDecline) return

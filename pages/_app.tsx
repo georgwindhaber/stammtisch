@@ -44,7 +44,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 		}
 	}, [router.pathname])
 
-	const handleFooterClick = (event: React.ChangeEvent<{}>, newValue: number) => {
+	const handleFooterClick = (event: React.ChangeEvent<unknown>, newValue: number) => {
 		switch (newValue) {
 			case 0:
 				router.push("/")

@@ -9,7 +9,6 @@ module.exports = {
 		"plugin:react/recommended",
 		"plugin:@typescript-eslint/recommended",
 		"next/core-web-vitals",
-		"react-app",
 	],
 	overrides: [],
 	parser: "@typescript-eslint/parser",
@@ -19,7 +18,6 @@ module.exports = {
 	},
 	plugins: ["react", "@typescript-eslint"],
 	rules: {
-		indent: ["error", "tab"],
 		"linebreak-style": ["error", "unix"],
 		semi: ["error", "never"],
 	},

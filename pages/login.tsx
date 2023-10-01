@@ -1,6 +1,5 @@
 import { LoadingButton } from "@mui/lab"
-import { Alert, Container, FormControl, IconButton, Snackbar, styled, TextField, Typography } from "@mui/material"
-import CloseIcon from "@mui/icons-material/Close"
+import { Alert, Container, FormControl, Snackbar, styled, TextField, Typography } from "@mui/material"
 import { Login as LoginIcon } from "@mui/icons-material"
 import { NextPage } from "next"
 import { ChangeEvent } from "react"

@@ -1,4 +1,4 @@
-import { Container, List, ListItem, Input, Fab, styled } from "@mui/material"
+import { Container, List, ListItem, Input, Fab } from "@mui/material"
 import type { NextPage } from "next"
 import { useBackend } from "../hooks/use-backend"
 import { User } from "@prisma/client"
@@ -12,7 +12,7 @@ const Bezahlt: NextPage = () => {
 	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users", {}, true)
 	const [userPayments, setUserPayments] = useState<Array<{ userId: number; payment: number }>>([])
 
-	const { fetch: payment } = useBackend<any>("/api/payments", {
+	const { fetch: payment } = useBackend("/api/payments", {
 		method: "POST",
 		data: { userPayments },
 	})
