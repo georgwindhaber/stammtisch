@@ -3,11 +3,14 @@ import { useEffect, useState } from "react"
 
 export const useBackend = <T>(path: string, config?: AxiosRequestConfig, initialCall: boolean = true) => {
 	const [data, setData] = useState<T | null>(null)
+	const [isLoading, setIsLoading] = useState(false)
 
 	const fetch = async () => {
+		setIsLoading(true)
 		const response = await Axios(`${process.env.API_URL}${path}`, { ...config, withCredentials: true })
 
 		setData(response.data)
+		setIsLoading(false)
 	}
 
 	useEffect(() => {
@@ -16,5 +19,5 @@ export const useBackend = <T>(path: string, config?: AxiosRequestConfig, initial
 		}
 	}, [])
 
-	return { data, fetch }
+	return { data, fetch, isLoading }
 }
