@@ -1,6 +1,4 @@
-import { GetServerSideProps, NextPage } from "next"
-import { verifyAccessToken } from "./api/helpers/helpers"
-import { prisma } from "./api/_base"
+import { NextPage } from "next"
 import { User } from "@prisma/client"
 import { parseISO, format } from "date-fns"
 import {
@@ -21,7 +19,6 @@ import {
 import { Check, Clear } from "@mui/icons-material"
 import { useState } from "react"
 import LoadingButton from "@mui/lab/LoadingButton"
-import Axios, { AxiosRequestConfig } from "axios"
 import { useBackend } from "../hooks/use-backend"
 
 type InactiveUser = Pick<User, "userId" | "email" | "username" | "registrationSecret"> & { createdAt: string }
@@ -84,17 +81,17 @@ const UserConfirmation = ({
 }
 
 const Admin: NextPage<AdminPageProps> = () => {
-	const { fetch, data: inactiveUsers } = useBackend<InactiveUser[]>("/api/users?inactive=true", {
-		method: "GET",
-	})
-	const [userToDecline, setUserToDecline] = useState<InactiveUser | null>(null)
-	const { fetch: deleteUser, isLoading: isDeleteUserLoading } = useBackend<any>(
-		`/api/users/${userToDecline?.userId}`,
+	const { fetch, data: inactiveUsers } = useBackend<InactiveUser[]>(
+		"/api/users?inactive=true",
 		{
-			method: "DELETE",
+			method: "GET",
 		},
-		false,
+		true,
 	)
+	const [userToDecline, setUserToDecline] = useState<InactiveUser | null>(null)
+	const { fetch: deleteUser, isLoading: isDeleteUserLoading } = useBackend<any>(`/api/users/${userToDecline?.userId}`, {
+		method: "DELETE",
+	})
 
 	const [userToAccept, setUserToAccept] = useState<InactiveUser | null>(null)
 	const { fetch: activateUser, isLoading: isAcceptingUserLoading } = useBackend<any>(
@@ -103,7 +100,6 @@ const Admin: NextPage<AdminPageProps> = () => {
 			method: "PUT",
 			data: { active: true },
 		},
-		false,
 	)
 
 	const declineUser = async () => {

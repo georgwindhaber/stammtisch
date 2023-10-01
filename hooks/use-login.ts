@@ -9,14 +9,10 @@ export const useLogin = () => {
 	const [username, setUsername] = useState("")
 	const [password, setPassword] = useState("")
 	const [errorMessage, setErrorMessage] = useState("")
-	const { fetch: fetchLogin } = useBackend<{ user: User }>(
-		"/api/auth/login",
-		{
-			method: "POST",
-			data: { username, password },
-		},
-		false,
-	)
+	const { fetch: fetchLogin } = useBackend<{ user: User }>("/api/auth/login", {
+		method: "POST",
+		data: { username, password },
+	})
 	const router = useRouter()
 
 	const logout = async () => {

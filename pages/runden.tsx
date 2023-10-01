@@ -9,16 +9,12 @@ import { FabContainer } from "../components/UserLists/FabContainer"
 import { useState } from "react"
 
 const Runden: NextPage = () => {
-	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users")
+	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users", {}, true)
 	const [selectedUser, setSelectedUser] = useState<number | null>(null)
-	const { fetch: events } = useBackend<any>(
-		"/api/events",
-		{
-			method: "POST",
-			data: { userId: selectedUser },
-		},
-		false,
-	)
+	const { fetch: events } = useBackend<any>("/api/events", {
+		method: "POST",
+		data: { userId: selectedUser },
+	})
 
 	const handleEvent = async () => {
 		setSelectedUser(null)

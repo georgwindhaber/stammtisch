@@ -40,14 +40,10 @@ const Registration: NextPage = () => {
 	const [isDone, setIsDone] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 
-	const { fetch: register } = useBackend<any>(
-		"/api/auth/register",
-		{
-			method: "POST",
-			data: { email, username, password, confirmPassword, registrationSecret: secret },
-		},
-		false,
-	)
+	const { fetch: register } = useBackend<any>("/api/auth/register", {
+		method: "POST",
+		data: { email, username, password, confirmPassword, registrationSecret: secret },
+	})
 
 	const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setEmail(e.target.value)

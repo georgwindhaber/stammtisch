@@ -1,7 +1,7 @@
 import Axios, { AxiosRequestConfig } from "axios"
 import { useEffect, useState } from "react"
 
-export const useBackend = <T>(path: string, config?: AxiosRequestConfig, initialCall: boolean = true) => {
+export const useBackend = <T>(path: string, config?: AxiosRequestConfig, initialCall: boolean = false) => {
 	const [data, setData] = useState<T | null>(null)
 	const [isLoading, setIsLoading] = useState(false)
 

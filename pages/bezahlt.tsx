@@ -9,7 +9,7 @@ import { BottomDrawer } from "../components/UserLists/BottomDrawer"
 import { FabContainer } from "../components/UserLists/FabContainer"
 
 const Bezahlt: NextPage = () => {
-	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users")
+	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users", {}, true)
 	const [userPayments, setUserPayments] = useState<Array<{ userId: number; payment: number }>>([])
 
 	const { fetch: payment } = useBackend<any>("/api/payments", {
