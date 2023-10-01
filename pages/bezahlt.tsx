@@ -45,7 +45,7 @@ const Bezahlt: NextPage = () => {
 				<List dense>
 					{users &&
 						users
-							.sort((a, b) => b.drinkCount - a.drinkCount)
+							.sort((a, b) => b.paymentSum - a.paymentSum)
 							.map((user) => {
 								return (
 									<ListItem
