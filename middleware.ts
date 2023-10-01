@@ -40,7 +40,6 @@ export async function middleware(req: NextRequest) {
 	return response
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
-	matcher: ["/", "/bezahlt", "/runden", "/admin"],
+	matcher: ["/", "/bezahlt", "/runden", "/admin", "/api/users", "/api/payments", "/api/events", "/api/drinks"],
 }
