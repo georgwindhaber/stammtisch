@@ -59,7 +59,7 @@ const Home: NextPage = () => {
 										}
 										disableGutters
 									>
-										<ListItemUser user={user} />
+										<ListItemUser user={user} valueType="drinks" />
 									</ListItem>
 								)
 							})}

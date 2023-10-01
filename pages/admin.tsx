@@ -2,6 +2,8 @@ import { GetServerSideProps, NextPage } from "next"
 import { verifyAccessToken } from "./api/helpers/helpers"
 import { prisma } from "./api/_base"
 import { User } from "@prisma/client"
+import { parseISO, format } from "date-fns"
+import { Avatar, Container, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material"
 
 type AdminPageProps = {
 	isAdmin: boolean
@@ -76,17 +78,33 @@ export const getServerSideProps = (async (context) => {
 }) satisfies GetServerSideProps<AdminPageProps>
 
 const Admin: NextPage<AdminPageProps> = ({ inactiveUsers }) => {
-	console.log(inactiveUsers)
 	return (
-		<div>
-			{inactiveUsers?.map((user) => {
-				return (
-					<div key={user.userId}>
-						{user.username} - {user.email} - {user.registrationSecret} - {new Date(user.createdAt).toLocaleString()}
-					</div>
-				)
-			})}
-		</div>
+		<Container fixed maxWidth="md">
+			<List dense>
+				{inactiveUsers &&
+					inactiveUsers
+						.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+						.map((user) => {
+							return (
+								<ListItem key={user.userId} disableGutters>
+									<ListItemAvatar>
+										<Avatar alt="S" />
+									</ListItemAvatar>
+									<ListItemText
+										primary={`${user.username} - ${user.email}`}
+										secondary={
+											<>
+												<span>{user.registrationSecret}</span>
+												<span> - </span>
+												<span>{format(parseISO(user.createdAt), "dd.MM.yyyy hh:mm")}</span>
+											</>
+										}
+									/>
+								</ListItem>
+							)
+						})}
+			</List>
+		</Container>
 	)
 }
 
