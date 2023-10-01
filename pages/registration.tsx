@@ -74,7 +74,6 @@ const Registration: NextPage = () => {
 		try {
 			setIsLoading(true)
 			await register()
-			setIsLoading(false)
 			setIsDone(true)
 		} catch (error) {
 			if (error instanceof AxiosError) {
@@ -84,6 +83,8 @@ const Registration: NextPage = () => {
 			} else {
 				setErrorMessage("Ein unbekannter Fehler ist aufgetreten")
 			}
+		} finally {
+			setIsLoading(false)
 		}
 	}
 
@@ -147,7 +148,7 @@ const Registration: NextPage = () => {
 			) : (
 				<>
 					<Typography variant="h6">Stammtisch Registrierung</Typography>
-					<Typography style={{ marginTop: 16, marginBottom: 24 }} variant="h3" align="center">
+					<Typography style={{ marginTop: 16, marginBottom: 24 }} variant="h4" align="center">
 						Deine Registrierung wurde versendet!
 					</Typography>
 					<Typography variant="h5" align="center">
