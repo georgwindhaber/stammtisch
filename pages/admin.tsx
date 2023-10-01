@@ -39,6 +39,50 @@ const UserInfoLabel = styled("span")({
 	fontWeight: "bold",
 })
 
+const UserConfirmation = ({
+	user,
+	isAccepting,
+	isLoading,
+	onCancel,
+	onAccept,
+}: {
+	user: InactiveUser
+	isAccepting: boolean
+	isLoading: boolean
+	onCancel: () => void
+	onAccept: () => void
+}) => {
+	return (
+		<Dialog open={!!user} onClose={onCancel}>
+			<DialogTitle>
+				"{user.username}" {!isAccepting && "nicht"} annehmen?
+			</DialogTitle>
+			<DialogContent>
+				<UserInfo>
+					<UserInfoLabel>Name:</UserInfoLabel> {user.username}
+				</UserInfo>
+				<UserInfo>
+					<UserInfoLabel>Email:</UserInfoLabel> {user.email}
+				</UserInfo>
+				<UserInfo>
+					<UserInfoLabel>Registrierungscode:</UserInfoLabel> {user.registrationSecret}
+				</UserInfo>
+				<UserInfo>
+					<UserInfoLabel>Erstellt am:</UserInfoLabel> {format(parseISO(user.createdAt.toString()), "dd.MM.yyyy hh:mm")}
+				</UserInfo>
+			</DialogContent>
+			<DialogActions>
+				<Button color="secondary" onClick={onCancel}>
+					Abbrechen
+				</Button>
+				<LoadingButton loading={isLoading} color={isAccepting ? "primary" : "error"} onClick={onAccept}>
+					"{user.username}" {isAccepting ? "Annehmen" : "Ablehnen"}
+				</LoadingButton>
+			</DialogActions>
+		</Dialog>
+	)
+}
+
 const Admin: NextPage<AdminPageProps> = () => {
 	const { fetch, data: inactiveUsers } = useBackend<InactiveUser[]>("/api/users?inactive=true", {
 		method: "GET",
@@ -51,7 +95,16 @@ const Admin: NextPage<AdminPageProps> = () => {
 		},
 		false,
 	)
+
 	const [userToAccept, setUserToAccept] = useState<InactiveUser | null>(null)
+	const { fetch: activateUser, isLoading: isAcceptingUserLoading } = useBackend<any>(
+		`/api/users/${userToAccept?.userId}`,
+		{
+			method: "PUT",
+			data: { active: true },
+		},
+		false,
+	)
 
 	const declineUser = async () => {
 		if (!userToDecline) return
@@ -60,10 +113,11 @@ const Admin: NextPage<AdminPageProps> = () => {
 		await fetch()
 	}
 
-	const acceptUser = async (user: { userId: number }) => {
-		// await fetch(`/api/users/${user.userId}`, {
-		// 	method: "PUT",
-		// })
+	const acceptUser = async () => {
+		if (!userToAccept) return
+		await activateUser()
+		setUserToAccept(null)
+		await fetch()
 	}
 
 	return (
@@ -96,41 +150,32 @@ const Admin: NextPage<AdminPageProps> = () => {
 									>
 										<Clear />
 									</Fab>
-									<Fab size="small" color="primary" onClick={() => acceptUser(user)}>
+									<Fab size="small" color="primary" onClick={() => setUserToAccept(user)}>
 										<Check />
 									</Fab>
 								</ListItem>
 							)
 						})}
 			</List>
-			<Dialog open={!!userToDecline} onClose={() => setUserToDecline(null)}>
-				{userToDecline && (
-					<>
-						<DialogTitle>"{userToDecline.username}" nicht annehmen?</DialogTitle>
-						<DialogContent>
-							<UserInfo>
-								<UserInfoLabel>Name:</UserInfoLabel> {userToDecline.username}
-							</UserInfo>
-							<UserInfo>
-								<UserInfoLabel>Email:</UserInfoLabel> {userToDecline.email}
-							</UserInfo>
-							<UserInfo>
-								<UserInfoLabel>Registrierungscode:</UserInfoLabel> {userToDecline.registrationSecret}
-							</UserInfo>
-							<UserInfo>
-								<UserInfoLabel>Erstellt am:</UserInfoLabel>{" "}
-								{format(parseISO(userToDecline.createdAt.toString()), "dd.MM.yyyy hh:mm")}
-							</UserInfo>
-						</DialogContent>
-						<DialogActions>
-							<Button onClick={() => setUserToDecline(null)}>Abbrechen</Button>
-							<LoadingButton loading={isDeleteUserLoading} color="error" onClick={declineUser}>
-								"{userToDecline?.username}" Ablehnen
-							</LoadingButton>
-						</DialogActions>
-					</>
-				)}
-			</Dialog>
+
+			{userToDecline && (
+				<UserConfirmation
+					user={userToDecline}
+					isAccepting={false}
+					isLoading={isDeleteUserLoading}
+					onCancel={() => setUserToDecline(null)}
+					onAccept={declineUser}
+				/>
+			)}
+			{userToAccept && (
+				<UserConfirmation
+					user={userToAccept}
+					isAccepting={true}
+					isLoading={isAcceptingUserLoading}
+					onCancel={() => setUserToAccept(null)}
+					onAccept={acceptUser}
+				/>
+			)}
 		</Container>
 	)
 }
