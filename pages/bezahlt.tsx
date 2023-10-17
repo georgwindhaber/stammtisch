@@ -7,15 +7,17 @@ import { Euro } from "@mui/icons-material"
 import { useState } from "react"
 import { BottomDrawer } from "../components/UserLists/BottomDrawer"
 import { FabContainer } from "../components/UserLists/FabContainer"
+import { LoadingOverlay } from "../components/UserLists/LoadingOverlay"
 
 const Bezahlt: NextPage = () => {
-	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users", {}, true)
+	const { data: users, fetch: fetchUsers, isLoading: isLoadingUsers } = useBackend<User[]>("/api/users", {}, true)
 	const [userPayments, setUserPayments] = useState<Array<{ userId: number; payment: number }>>([])
 
-	const { fetch: payment } = useBackend("/api/payments", {
+	const { fetch: payment, isLoading: isLoadingPayments } = useBackend("/api/payments", {
 		method: "POST",
 		data: { userPayments },
 	})
+	const [isActionDisabled, setIsActionDisabled] = useState<boolean>(false)
 
 	const handlePaymentChange = (userId: number, payment: number) => {
 		if (!payment) {
@@ -34,9 +36,11 @@ const Bezahlt: NextPage = () => {
 	}
 
 	const handlePayment = async () => {
+		setIsActionDisabled(true)
 		await payment()
 		await fetchUsers()
 		setUserPayments([])
+		setIsActionDisabled(false)
 	}
 
 	return (
@@ -64,6 +68,11 @@ const Bezahlt: NextPage = () => {
 										}
 									>
 										<ListItemUser user={user} valueType="payments" />
+										<LoadingOverlay
+											visible={
+												(isLoadingPayments || isLoadingUsers) && !!userPayments.find((u) => u.userId === user.userId)
+											}
+										/>
 									</ListItem>
 								)
 							})}
@@ -71,7 +80,7 @@ const Bezahlt: NextPage = () => {
 			</Container>
 			<BottomDrawer>
 				<FabContainer>
-					<Fab color="primary" onClick={handlePayment} disabled={userPayments.length === 0}>
+					<Fab color="primary" onClick={handlePayment} disabled={userPayments.length === 0 || isActionDisabled}>
 						<Euro fontSize="large" />
 					</Fab>
 				</FabContainer>

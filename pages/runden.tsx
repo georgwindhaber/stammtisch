@@ -7,19 +7,23 @@ import { ListItemUser } from "../components/ListItemUser"
 import { BottomDrawer } from "../components/UserLists/BottomDrawer"
 import { FabContainer } from "../components/UserLists/FabContainer"
 import { useState } from "react"
+import { LoadingOverlay } from "../components/UserLists/LoadingOverlay"
 
 const Runden: NextPage = () => {
-	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users", {}, true)
+	const { data: users, fetch: fetchUsers, isLoading: isLoadingUsers } = useBackend<User[]>("/api/users", {}, true)
 	const [selectedUser, setSelectedUser] = useState<number | null>(null)
-	const { fetch: events } = useBackend("/api/events", {
+	const { fetch: events, isLoading: isLoadingEvents } = useBackend("/api/events", {
 		method: "POST",
 		data: { userId: selectedUser },
 	})
+	const [isActionDisabled, setIsActionDisabled] = useState<boolean>(false)
 
 	const handleEvent = async () => {
-		setSelectedUser(null)
+		setIsActionDisabled(true)
 		await events()
 		await fetchUsers()
+		setSelectedUser(null)
+		setIsActionDisabled(false)
 	}
 
 	return (
@@ -39,6 +43,7 @@ const Runden: NextPage = () => {
 										}
 									>
 										<ListItemUser user={user} valueType="events" />
+										<LoadingOverlay visible={(isLoadingEvents || isLoadingUsers) && selectedUser === user.userId} />
 									</ListItem>
 								)
 							})}
@@ -46,7 +51,7 @@ const Runden: NextPage = () => {
 			</Container>
 			<BottomDrawer>
 				<FabContainer>
-					<Fab color="primary" onClick={handleEvent} disabled={!selectedUser}>
+					<Fab color="primary" onClick={handleEvent} disabled={!selectedUser || isActionDisabled}>
 						<People fontSize="large" />
 					</Fab>
 				</FabContainer>

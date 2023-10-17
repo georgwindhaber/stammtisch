@@ -1,5 +1,5 @@
 import { SportsBar } from "@mui/icons-material"
-import { Checkbox, Container, Fab, List, ListItem } from "@mui/material"
+import { Checkbox, Container, Fab, Fade, List, ListItem, Skeleton } from "@mui/material"
 import type { NextPage } from "next"
 import { useState } from "react"
 import { useBackend } from "../hooks/use-backend"
@@ -7,14 +7,16 @@ import type { User } from "@prisma/client"
 import { ListItemUser } from "../components/ListItemUser"
 import { BottomDrawer } from "../components/UserLists/BottomDrawer"
 import { FabContainer } from "../components/UserLists/FabContainer"
+import { LoadingOverlay } from "../components/UserLists/LoadingOverlay"
 
 const Home: NextPage = () => {
 	const [selectedUsers, setSelectedUsers] = useState<Array<number>>([])
-	const { data: users, fetch: fetchUsers } = useBackend<User[]>("/api/users", {}, true)
-	const { fetch: drink } = useBackend("/api/drinks", {
+	const { data: users, fetch: fetchUsers, isLoading: isLoadingUsers } = useBackend<User[]>("/api/users", {}, true)
+	const { fetch: drink, isLoading: isLoadingDrinks } = useBackend("/api/drinks", {
 		method: "POST",
 		data: { userIds: selectedUsers },
 	})
+	const [isActionDisabled, setIsActionDisabled] = useState<boolean>(false)
 
 	const handleToggle = (userId: number) => {
 		const currentIndex = selectedUsers.indexOf(userId)
@@ -30,9 +32,11 @@ const Home: NextPage = () => {
 	}
 
 	const handleDrink = async () => {
-		setSelectedUsers([])
+		setIsActionDisabled(true)
 		await drink()
 		await fetchUsers()
+		setSelectedUsers([])
+		setIsActionDisabled(false)
 	}
 	return (
 		<>
@@ -55,6 +59,9 @@ const Home: NextPage = () => {
 										disableGutters
 									>
 										<ListItemUser user={user} valueType="drinks" />
+										<LoadingOverlay
+											visible={(isLoadingDrinks || isLoadingUsers) && selectedUsers.indexOf(user.userId) !== -1}
+										/>
 									</ListItem>
 								)
 							})}
@@ -62,7 +69,7 @@ const Home: NextPage = () => {
 			</Container>
 			<BottomDrawer>
 				<FabContainer>
-					<Fab color="primary" onClick={handleDrink} disabled={!selectedUsers.length}>
+					<Fab color="primary" onClick={handleDrink} disabled={!selectedUsers.length || isActionDisabled}>
 						<SportsBar fontSize="large" />
 					</Fab>
 				</FabContainer>
