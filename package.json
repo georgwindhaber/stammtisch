@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -12,7 +14,12 @@
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "^2.21.0",
+    "drizzle-kit": "^0.30.4",
     "nuxt": "^3.15.4",
     "vue": "latest"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "drizzle-orm": "^0.39.3"
   }
 }
