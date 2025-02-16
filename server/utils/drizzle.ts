@@ -7,7 +7,6 @@ import * as schema from "../database/schema";
 export const tables = schema;
 
 export function useDrizzle() {
-  console.log("process env", process.env.DB_URL);
   return drizzle(
     createClient({ url: process.env.DB_URL!, authToken: process.env.DB_TOKEN }),
     {
