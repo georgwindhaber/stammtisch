@@ -2,16 +2,19 @@
 const route = useRoute();
 const router = useRouter();
 
-const selected = ref([]);
+const selectedUsers = ref<Array<number>>([]);
 
 const tabs = [
   {
+    key: "drinks",
     label: "Getrunken",
   },
   {
+    key: "paid",
     label: "Bezahlt",
   },
   {
+    key: "rounds",
     label: "Runden",
   },
 ];
@@ -50,22 +53,43 @@ const colums = computed(() => {
 });
 
 const members = await useFetch("/api/members");
+
+const submit = async () => {
+  const response = await $fetch("/api/drinks", {
+    method: "POST",
+    body: {
+      users: selectedUsers.value.map((user) => user.userId),
+      value: 1,
+      mode: tabs[selectedTab.value].key,
+    },
+  });
+  members.data.value = response;
+  selectedUsers.value = [];
+};
+
+const membersInOrder = computed(() =>
+  members.data.value?.sort(
+    (member1, member2) => Number(member2.drinks) - Number(member1.drinks)
+  )
+);
 </script>
 
 <template>
-  <UContainer v-if="members.data.value">
+  <UContainer v-if="selectedUsers">
     <UTabs :items="tabs" v-model="selectedTab" />
     <UTable
-      v-model="selected"
+      v-model="selectedUsers"
       :empty-state="{
         icon: 'i-heroicons-circle-stack-20-solid',
         label: 'Keine Einträge',
       }"
-      :rows="members.data.value"
+      :rows="membersInOrder"
       :columns="colums"
     />
     <div class="flex gap-3 w-full justify-center">
-      <UButton> +1 {{ tabs[selectedTab].label }} </UButton>
+      <UButton @click="submit" :disabled="!selectedUsers.length">
+        +1 {{ tabs[selectedTab].label }}
+      </UButton>
     </div>
   </UContainer>
 </template>

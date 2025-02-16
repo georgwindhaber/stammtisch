@@ -6,8 +6,8 @@ export const getAllMembers = async () => {
     .select({
       name: users.name,
       userId: users.userId,
-      drinks: count(drinks.drinkId),
-      rounds: count(rounds.roundId),
+      drinks: sum(drinks.value),
+      rounds: sum(rounds.value),
       paid: sum(paid.value),
     })
     .from(tables.users)
@@ -19,6 +19,8 @@ export const getAllMembers = async () => {
   return dbResult.map((row) => ({
     ...row,
     paid: row.paid ?? 0,
+    drinks: row.drinks ?? 0,
+    rounds: row.rounds ?? 0,
   }));
 };
 
