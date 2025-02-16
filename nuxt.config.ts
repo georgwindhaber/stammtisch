@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@nuxt/ui", "@sidebase/nuxt-auth"],
+
   auth: {
     globalAppMiddleware: true,
     isEnabled: true,
@@ -21,9 +22,12 @@ export default defineNuxtConfig({
       enableOnWindowFocus: true,
     },
   },
+
   runtimeConfig: {
     authSecret: process.env.NUXT_AUTH_SECRET,
     googleClientId: process.env.NUXT_GOOGLE_CLIENT_ID,
     googleClientSecret: process.env.NUXT_GOOGLE_CLIENT_SECRET,
   },
+
+  compatibilityDate: "2025-02-15",
 });
