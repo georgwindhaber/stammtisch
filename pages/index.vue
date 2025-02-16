@@ -76,7 +76,7 @@ const membersInOrder = computed(() =>
 
 <template>
   <UContainer v-if="selectedUsers">
-    <UTabs :items="tabs" v-model="selectedTab" />
+    <UTabs :items="tabs" v-model="selectedTab" class="m-5" />
     <UTable
       v-model="selectedUsers"
       :empty-state="{
