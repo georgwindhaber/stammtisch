@@ -2,7 +2,15 @@
 const route = useRoute();
 const router = useRouter();
 
-const selectedUsers = ref<Array<number>>([]);
+const selectedUsers = ref<
+  Array<{
+    name: string;
+    paid: number;
+    userId: number;
+    drinks: string;
+    rounds: number;
+  }>
+>([]);
 
 const tabs = [
   {
@@ -55,7 +63,7 @@ const colums = computed(() => {
 });
 
 const submit = async () => {
-  const response = await $fetch("/api/drinks", {
+  const response = await $fetch("/api/members", {
     method: "POST",
     body: {
       users: selectedUsers.value.map((user) => user.userId),
@@ -68,7 +76,7 @@ const submit = async () => {
 };
 
 const membersInOrder = computed(() => {
-  return members.data.value.sort(
+  return members.data.value?.sort(
     (member1, member2) => Number(member2.drinks) - Number(member1.drinks)
   );
 });

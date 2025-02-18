@@ -1,7 +1,7 @@
 import { drinks, paid, rounds, users } from "../database/schema";
-import { count, eq, isNull, ne, sum } from "drizzle-orm";
+import { eq, sum } from "drizzle-orm";
 
-const joinArrays = (arr1, arr2, key) => {
+const joinArrays = (arr1: Array<unknown>, arr2: Array<unknown>, key) => {
   return arr1
     .map((obj1) => {
       const matchingObj = arr2.find((obj2) => obj2[key] === obj1[key]);
@@ -48,9 +48,7 @@ export const getAllMembers = async () => {
   ]);
 
   const drinksAndPaid = joinArrays(drinksData, paidData, "userId");
-  const allData = joinArrays(drinksAndPaid, roundsData, "userId");
-
-  return allData;
+  return joinArrays(drinksAndPaid, roundsData, "userId");
 };
 
 export default eventHandler(async () => {
