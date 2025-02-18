@@ -33,6 +33,8 @@ const selectedTab = computed({
   },
 });
 
+const members = await useFetch("/api/members");
+
 const colums = computed(() => {
   const base = [
     {
@@ -52,8 +54,6 @@ const colums = computed(() => {
   return base;
 });
 
-const members = await useFetch("/api/members");
-
 const submit = async () => {
   const response = await $fetch("/api/drinks", {
     method: "POST",
@@ -67,11 +67,11 @@ const submit = async () => {
   selectedUsers.value = [];
 };
 
-const membersInOrder = computed(() =>
-  members.data.value?.sort(
+const membersInOrder = computed(() => {
+  return members.data.value.sort(
     (member1, member2) => Number(member2.drinks) - Number(member1.drinks)
-  )
-);
+  );
+});
 </script>
 
 <template>
