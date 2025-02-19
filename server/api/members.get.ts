@@ -14,11 +14,13 @@ export const getAllMembers = async () => {
   const drinksRequest = useDrizzle()
     .select({
       name: users.name,
+      role: users.role,
       userId: users.userId,
       drinks: sum(drinks.value),
     })
     .from(tables.users)
     .leftJoin(drinks, eq(drinks.userId, users.userId))
+    .where(eq(users.role, "member"))
     .groupBy(users.userId, users.name);
 
   const paidRequest = useDrizzle()

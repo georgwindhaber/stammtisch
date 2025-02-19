@@ -20,23 +20,12 @@ export default NuxtAuthHandler({
         );
       }
 
-      const databaseUser = await useDrizzle()
-        .select()
-        .from(tables.users)
-        .where(eq(users.email, user.email));
+      const membersAndAdmins = await useDrizzle()
+        .select({ name: users.name, role: users.role, email: users.email })
+        .from(users)
+        .where(or(eq(users.role, "member"), eq(users.role, "admin")));
 
-      if (!databaseUser.length) {
-        await useDrizzle()
-          .insert(tables.users)
-          .values({
-            name: user.name ?? "",
-            email: user.email,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          });
-      }
-
-      return true;
+      return membersAndAdmins.some((member) => member.email === user.email);
     },
     async session({ session }) {
       if (!session.user?.email) {
