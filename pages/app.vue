@@ -26,6 +26,10 @@ const tabs = [
     key: "rounds",
     label: "Runden",
   },
+  {
+    key: "guests",
+    label: "Gäste",
+  },
 ];
 
 const value = ref(1);
@@ -90,44 +94,49 @@ const membersInOrder = computed(() => {
 </script>
 
 <template>
-  <UContainer v-if="selectedUsers" class="flex flex-col h-full">
-    <UTabs :items="tabs" v-model="selectedTab" class="m-5" />
-    <UTable
-      v-model="selectedUsers"
-      :empty-state="{
-        icon: 'i-heroicons-circle-stack-20-solid',
-        label: 'Keine Einträge',
-      }"
-      :rows="membersInOrder"
-      :columns="colums"
-    />
-    <div class="flex flex-col gap-3 w-full items-center mt-5">
-      <URange v-model="value" :min="1" :max="10" />
-      <div class="flex gap-3">
-        <UInput v-model="value" type="number" />
-        <UButton
-          variant="soft"
-          icon="material-symbols:info-outline-rounded"
-          @click="isNumberInfoOpen = true"
-        />
-
-        <UModal v-model="isNumberInfoOpen">
-          <div class="p-4">
-            Du kaunst do a minus Zoin eigebn, foist di moi vertippt host
-          </div>
-        </UModal>
-      </div>
-      <UButton @click="submit" :disabled="!selectedUsers.length" class="mt-5">
-        <template v-if="value > 0"> + </template>
-
-        {{ value }} {{ tabs[selectedTab].label }}
-      </UButton>
-    </div>
-    <div class="flex-1" />
-  </UContainer>
-  <footer class="fixed bottom-3 flex justify-center items-center w-full">
-    <UButton @click="() => signOut({ callbackUrl: '/' })" variant="soft"
-      >Ausloggen</UButton
+  <div class="flex flex-col h-full">
+    <UContainer>
+      <UTabs :items="tabs" v-model="selectedTab" class="m-5" />
+    </UContainer>
+    <UContainer
+      v-if="selectedUsers && selectedTab !== 3"
+      class="flex flex-col h-full"
     >
-  </footer>
+      <UTable
+        v-model="selectedUsers"
+        :empty-state="{
+          icon: 'i-heroicons-circle-stack-20-solid',
+          label: 'Keine Einträge',
+        }"
+        :rows="membersInOrder"
+        :columns="colums"
+      />
+      <div class="flex flex-col gap-3 w-full items-center mt-5">
+        <div class="flex gap-3">
+          <UInput v-model="value" type="number" />
+          <UButton
+            variant="soft"
+            icon="material-symbols:info-outline-rounded"
+            @click="isNumberInfoOpen = true"
+          />
+          <UModal v-model="isNumberInfoOpen">
+            <div class="p-4">
+              Du kaunst do a minus Zoin eigebn, foist di moi vertippt host
+            </div>
+          </UModal>
+        </div>
+        <UButton @click="submit" :disabled="!selectedUsers.length" class="mt-2">
+          <template v-if="value > 0"> + </template>
+
+          {{ value }} {{ tabs[selectedTab].label }}
+        </UButton>
+      </div>
+    </UContainer>
+    <div class="flex-1" />
+    <footer class="flex justify-center items-center w-full p-3">
+      <UButton @click="() => signOut({ callbackUrl: '/' })" variant="soft">
+        Ausloggen
+      </UButton>
+    </footer>
+  </div>
 </template>
