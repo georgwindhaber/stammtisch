@@ -56,6 +56,7 @@ const colums = computed(() => {
     base.push({ key: "drinks", label: "Getrunken" });
   } else if (selectedTab.value === 1) {
     base.push({ key: "paid", label: "Bezahlt" });
+    base.push({ key: "balance", label: "Guthaben" });
   } else if (selectedTab.value === 2) {
     base.push({ key: "rounds", label: "Runden" });
   }
@@ -77,9 +78,11 @@ const submit = async () => {
 };
 
 const membersInOrder = computed(() => {
-  return members.data.value?.sort(
-    (member1, member2) => Number(member2.drinks) - Number(member1.drinks)
-  );
+  return members.data.value
+    ?.sort(
+      (member1, member2) => Number(member2.drinks) - Number(member1.drinks)
+    )
+    .map((m) => ({ ...m, balance: m.paid - m.drinks }));
 });
 </script>
 

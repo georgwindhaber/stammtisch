@@ -1,4 +1,4 @@
-import { never, z } from "zod";
+import { z } from "zod";
 import { drinks, paid, rounds } from "../database/schema";
 import { getAllMembers } from "./members.get";
 
