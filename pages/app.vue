@@ -28,6 +28,9 @@ const tabs = [
   },
 ];
 
+const value = ref(1);
+const isNumberInfoOpen = ref(false);
+
 const selectedTab = computed({
   get() {
     const index = tabs.findIndex((tab) => tab.label === route.query.tab);
@@ -69,7 +72,7 @@ const submit = async () => {
     method: "POST",
     body: {
       users: selectedUsers.value.map((user) => user.userId),
-      value: 1,
+      value: value.value,
       mode: tabs[selectedTab.value].key,
     },
   });
@@ -98,14 +101,31 @@ const membersInOrder = computed(() => {
       :rows="membersInOrder"
       :columns="colums"
     />
-    <div class="flex gap-3 w-full justify-center">
-      <UButton @click="submit" :disabled="!selectedUsers.length">
-        +1 {{ tabs[selectedTab].label }}
+    <div class="flex flex-col gap-3 w-full items-center mt-5">
+      <URange v-model="value" :min="1" :max="10" />
+      <div class="flex gap-3">
+        <UInput v-model="value" type="number" />
+        <UButton
+          variant="soft"
+          icon="material-symbols:info-outline-rounded"
+          @click="isNumberInfoOpen = true"
+        />
+
+        <UModal v-model="isNumberInfoOpen">
+          <div class="p-4">
+            Du kaunst do a minus Zoin eigebn, foist di moi vertippt host
+          </div>
+        </UModal>
+      </div>
+      <UButton @click="submit" :disabled="!selectedUsers.length" class="mt-5">
+        <template v-if="value > 0"> + </template>
+
+        {{ value }} {{ tabs[selectedTab].label }}
       </UButton>
     </div>
     <div class="flex-1" />
   </UContainer>
-  <footer class="fixed bottom-0">
+  <footer class="fixed bottom-3 flex justify-center items-center w-full">
     <UButton @click="() => signOut({ callbackUrl: '/' })" variant="soft"
       >Ausloggen</UButton
     >
