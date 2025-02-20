@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { drinks, paid, rounds, users } from "../database/schema";
 import { eq, sum } from "drizzle-orm";
 
@@ -10,7 +11,7 @@ const joinArrays = (arr1: Array<unknown>, arr2: Array<unknown>, key) => {
     .filter((obj) => obj[key] !== undefined);
 };
 
-export const getAllMembers = async (members: boolean = true) => {
+export const getAllMembers = async (role: "member" | "guest") => {
   const drinksRequest = useDrizzle()
     .select({
       name: users.name,
@@ -20,7 +21,7 @@ export const getAllMembers = async (members: boolean = true) => {
     })
     .from(tables.users)
     .leftJoin(drinks, eq(drinks.userId, users.userId))
-    .where(eq(users.role, members ? "member" : "guest"))
+    .where(eq(users.role, role))
     .groupBy(users.userId, users.name);
 
   const paidRequest = useDrizzle()
@@ -53,7 +54,12 @@ export const getAllMembers = async (members: boolean = true) => {
   return joinArrays(drinksAndPaid, roundsData, "userId");
 };
 
-export default eventHandler(async () => {
-  const result = await getAllMembers();
+const querySchema = z.object({
+  role: z.enum(["member", "guest"]),
+});
+
+export default eventHandler(async (event) => {
+  const query = await getValidatedQuery(event, querySchema.parse);
+  const result = await getAllMembers(query.role);
   return result;
 });

@@ -2,6 +2,10 @@ import { z } from "zod";
 import { drinks, paid, rounds } from "../database/schema";
 import { getAllMembers } from "./members.get";
 
+const querySchema = z.object({
+  role: z.enum(["member", "guest"]),
+});
+
 const bodySchema = z.object({
   users: z.array(z.number()),
   value: z.number(),
@@ -9,6 +13,7 @@ const bodySchema = z.object({
 });
 
 export default eventHandler(async (event) => {
+  const query = await getValidatedQuery(event, querySchema.parse);
   const body = await readValidatedBody(event, bodySchema.parse);
 
   const table =
@@ -24,5 +29,5 @@ export default eventHandler(async (event) => {
       }))
     );
 
-  return getAllMembers();
+  return getAllMembers(query.role);
 });

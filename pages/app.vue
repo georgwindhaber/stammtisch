@@ -13,6 +13,17 @@ const selectedUsers = ref<
   }>
 >([]);
 
+const memberTabs = [
+  {
+    key: "member",
+    label: "Mitglieder",
+  },
+  {
+    key: "guest",
+    label: "Gäste",
+  },
+];
+
 const tabs = [
   {
     key: "drinks",
@@ -26,14 +37,27 @@ const tabs = [
     key: "rounds",
     label: "Runden",
   },
-  {
-    key: "guests",
-    label: "Gäste",
-  },
 ];
 
 const value = ref(1);
 const isNumberInfoOpen = ref(false);
+
+const newGuestName = ref("");
+const selectedMemberTab = ref(0);
+
+const members = await useFetch("/api/members", {
+  query: {
+    role: memberTabs[selectedMemberTab.value].key,
+  },
+});
+
+watch(selectedMemberTab, async () => {
+  members.data.value = await $fetch("/api/members", {
+    query: {
+      role: memberTabs[selectedMemberTab.value].key,
+    },
+  });
+});
 
 const selectedTab = computed({
   get() {
@@ -48,8 +72,6 @@ const selectedTab = computed({
     });
   },
 });
-
-const members = await useFetch("/api/members");
 
 const colums = computed(() => {
   const base = [
@@ -74,8 +96,12 @@ const colums = computed(() => {
 });
 
 const submit = async () => {
+  console.log(memberTabs[selectedMemberTab.value].key, selectedMemberTab.value);
   const response = await $fetch("/api/members", {
     method: "POST",
+    query: {
+      role: memberTabs[selectedMemberTab.value].key,
+    },
     body: {
       users: selectedUsers.value.map((user) => user.userId),
       value: value.value,
@@ -83,6 +109,7 @@ const submit = async () => {
     },
   });
   members.data.value = response;
+  value.value = 1;
   selectedUsers.value = [];
 };
 
@@ -93,17 +120,38 @@ const membersInOrder = computed(() => {
     )
     .map((m) => ({ ...m, balance: m.paid - m.drinks }));
 });
+
+const addNewGuest = async () => {
+  members.data.value = await $fetch("/api/guests", {
+    method: "POST",
+    body: {
+      name: newGuestName.value,
+    },
+  });
+};
 </script>
 
 <template>
   <div class="flex flex-col h-full">
     <UContainer>
+      <UTabs :items="memberTabs" v-model="selectedMemberTab" class="m-5" />
       <UTabs :items="tabs" v-model="selectedTab" class="m-5" />
     </UContainer>
-    <UContainer
-      v-if="selectedUsers && selectedTab !== 3"
-      class="flex flex-col h-full"
-    >
+    <UContainer v-if="selectedUsers" class="flex flex-col h-full">
+      <div
+        v-if="selectedMemberTab === 1"
+        class="flex flex-col gap-3 items-center"
+      >
+        <UInput v-model="newGuestName" type="text" class="w-full" />
+        <UButton
+          icon="material-symbols:add-2-rounded"
+          :disabled="!newGuestName.length"
+          @click="addNewGuest"
+        >
+          Gast hinzufügen
+        </UButton>
+      </div>
+
       <UTable
         v-model="selectedUsers"
         :empty-state="{
