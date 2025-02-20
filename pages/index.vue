@@ -26,5 +26,6 @@ const drinks = useFetch("/api/drinks");
         {{ drinks.data.value?.find((d) => d.role === "guest")?.value }}
       </div>
     </div>
+    <NuxtLink class="fixed bottom-5" to="/app"> Zur App </NuxtLink>
   </main>
 </template>
