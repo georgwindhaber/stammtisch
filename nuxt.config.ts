@@ -2,7 +2,11 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@nuxt/ui", "@sidebase/nuxt-auth"],
-
+  app: {
+    head: {
+      title: "Kellerbierrunde",
+    },
+  },
   auth: {
     globalAppMiddleware: true,
     isEnabled: true,
