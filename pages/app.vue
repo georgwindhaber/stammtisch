@@ -66,6 +66,8 @@ const colums = computed(() => {
     base.push({ key: "balance", label: "Guthaben" });
   } else if (selectedTab.value === 2) {
     base.push({ key: "rounds", label: "Runden" });
+  } else if (selectedTab.value === 3) {
+    base.push({ key: "paid", label: "Gäste" });
   }
 
   return base;

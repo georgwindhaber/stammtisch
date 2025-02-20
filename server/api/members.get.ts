@@ -10,7 +10,7 @@ const joinArrays = (arr1: Array<unknown>, arr2: Array<unknown>, key) => {
     .filter((obj) => obj[key] !== undefined);
 };
 
-export const getAllMembers = async () => {
+export const getAllMembers = async (members: boolean = true) => {
   const drinksRequest = useDrizzle()
     .select({
       name: users.name,
@@ -20,7 +20,7 @@ export const getAllMembers = async () => {
     })
     .from(tables.users)
     .leftJoin(drinks, eq(drinks.userId, users.userId))
-    .where(eq(users.role, "member"))
+    .where(eq(users.role, members ? "member" : "guest"))
     .groupBy(users.userId, users.name);
 
   const paidRequest = useDrizzle()
