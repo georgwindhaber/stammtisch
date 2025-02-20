@@ -20,10 +20,10 @@ const drinks = useFetch("/api/drinks");
       />
       <div class="mt-7 text-center italic">
         Konsumiert:
-        {{ drinks.data.value?.find((d) => d.role === "member")?.value }}
+        {{ drinks.data.value?.find((d) => d.role === "member")?.value || 0 }}
         <br />
         Gäste:
-        {{ drinks.data.value?.find((d) => d.role === "guest")?.value }}
+        {{ drinks.data.value?.find((d) => d.role === "guest")?.value || 0 }}
       </div>
     </div>
     <NuxtLink class="fixed bottom-5" to="/app"> Zur App </NuxtLink>
