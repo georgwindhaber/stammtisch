@@ -3,15 +3,15 @@ const route = useRoute();
 const router = useRouter();
 const { signOut } = useAuth();
 
-const selectedUsers = ref<
-  Array<{
-    name: string;
-    paid: number;
-    userId: number;
-    drinks: string;
-    rounds: number;
-  }>
->([]);
+type Row = {
+  name: string;
+  paid: number;
+  userId: number;
+  drinks: string;
+  rounds: number;
+};
+
+const selectedUsers = ref<Array<Row>>([]);
 
 const memberTabs = [
   {
@@ -96,7 +96,6 @@ const colums = computed(() => {
 });
 
 const submit = async () => {
-  console.log(memberTabs[selectedMemberTab.value].key, selectedMemberTab.value);
   const response = await $fetch("/api/members", {
     method: "POST",
     query: {
@@ -129,6 +128,17 @@ const addNewGuest = async () => {
     },
   });
 };
+
+function select(row: Row) {
+  const index = selectedUsers.value.findIndex(
+    (item) => item.userId === row.userId
+  );
+  if (index === -1) {
+    selectedUsers.value.push(row);
+  } else {
+    selectedUsers.value.splice(index, 1);
+  }
+}
 </script>
 
 <template>
@@ -160,6 +170,7 @@ const addNewGuest = async () => {
         }"
         :rows="membersInOrder"
         :columns="colums"
+        @select="select"
       />
       <div class="flex flex-col gap-3 w-full items-center mt-5">
         <div class="flex gap-3">
