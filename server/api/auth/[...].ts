@@ -7,10 +7,10 @@ export default NuxtAuthHandler({
   secret: useRuntimeConfig().authSecret,
   providers: [
     // @ts-expect-error Use .default here for it to work during SSR.
-    GoogleProvider.default({
-      clientId: useRuntimeConfig().googleClientId,
-      clientSecret: useRuntimeConfig().googleClientSecret,
-    }),
+    // GoogleProvider.default({
+    //   clientId: useRuntimeConfig().googleClientId,
+    //   clientSecret: useRuntimeConfig().googleClientSecret,
+    // }),
     // @ts-expect-error Use .default here for it to work during SSR.
     Auth0Provider.default({
       clientId: process.env.AUTH0_CLIENT_ID,
