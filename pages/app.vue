@@ -149,26 +149,31 @@ function select(row: Row) {
 
 <template>
   <div class="flex flex-col h-full">
-    <UContainer>
-      <UTabs :items="memberTabs" v-model="selectedMemberTab" class="m-5" />
-      <UTabs :items="tabs" v-model="selectedTab" class="m-5" />
-    </UContainer>
-    <UContainer v-if="selectedUsers" class="flex flex-col h-full">
+    <div>
+      <select>
+        <option v-for="memberTab of memberTabs">
+          {{ memberTab.label }}
+        </option>
+      </select>
+      <!-- <UTabs :items="memberTabs" v-model="selectedMemberTab" class="m-5" /> -->
+      <!-- <UTabs :items="tabs" v-model="selectedTab" class="m-5" /> -->
+    </div>
+    <div v-if="selectedUsers" class="flex flex-col h-full">
       <div
         v-if="selectedMemberTab === 1"
         class="flex flex-col gap-3 items-center"
       >
-        <UInput v-model="newGuestName" type="text" class="w-full" />
-        <UButton
+        <input v-model="newGuestName" type="text" class="w-full" />
+        <button
           icon="material-symbols:add-2-rounded"
           :disabled="!newGuestName.length"
           @click="addNewGuest"
         >
           Gast hinzufügen
-        </UButton>
+        </button>
       </div>
 
-      <UTable
+      <!-- <UTable
         v-model="selectedUsers"
         :empty-state="{
           icon: 'i-heroicons-circle-stack-20-solid',
@@ -177,33 +182,25 @@ function select(row: Row) {
         :rows="membersInOrder"
         :columns="colums"
         @select="select"
-      />
+      /> -->
       <div class="flex flex-col gap-3 w-full items-center mt-5">
         <div class="flex gap-3">
-          <UInput v-model="value" type="number" />
-          <UButton
-            variant="soft"
-            icon="material-symbols:info-outline-rounded"
-            @click="isNumberInfoOpen = true"
-          />
-          <UModal v-model="isNumberInfoOpen">
-            <div class="p-4">
-              Du kaunst do a minus Zoin eigebn, foist di moi vertippt host
-            </div>
-          </UModal>
+          <input v-model="value" type="number" step="1" />
         </div>
-        <UButton @click="submit" :disabled="!selectedUsers.length" class="mt-2">
+
+        {{ membersInOrder }}
+        <button @click="submit" :disabled="!selectedUsers.length" class="mt-2">
           <template v-if="value > 0"> + </template>
 
           {{ value }} {{ tabs[selectedTab].label }}
-        </UButton>
+        </button>
       </div>
-    </UContainer>
+    </div>
     <div class="flex-1" />
     <footer class="flex justify-center items-center w-full p-3">
-      <UButton @click="() => signOut({ callbackUrl: '/' })" variant="soft">
+      <button @click="() => signOut({ callbackUrl: '/' })" variant="soft">
         Ausloggen
-      </UButton>
+      </button>
     </footer>
   </div>
 </template>
