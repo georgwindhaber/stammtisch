@@ -96,13 +96,19 @@ const colums = computed(() => {
 });
 
 const submit = async () => {
+  const uniqueMembers = Array.from(
+    new Set(selectedUsers.value.map((obj) => obj.userId))
+  ).map((userId) => {
+    return selectedUsers.value.find((obj) => obj.userId === userId)!;
+  });
+
   const response = await $fetch("/api/members", {
     method: "POST",
     query: {
       role: memberTabs[selectedMemberTab.value].key,
     },
     body: {
-      users: selectedUsers.value.map((user) => user.userId),
+      users: uniqueMembers.map((user) => user.userId),
       value: value.value,
       mode: tabs[selectedTab.value].key,
     },
