@@ -12,7 +12,7 @@ const drinks = useFetch("/api/drinks");
       <h1 class="text-3xl text-center font-bold mb-5">Kellerbierrunde</h1>
       <img
         src="/logo.png"
-        class="dark:invert"
+        class=""
         width="300"
         height="300"
         priority
