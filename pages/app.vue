@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Textarea from "~/components/textarea/textarea.vue";
+
 const route = useRoute();
 const router = useRouter();
 const { signOut } = useAuth();
@@ -13,86 +15,24 @@ type Row = {
 
 const selectedUsers = ref<Array<Row>>([]);
 
-const memberTabs = [
-  {
-    key: "member",
-    label: "Mitglieder",
-  },
-  {
-    key: "guest",
-    label: "Gäste",
-  },
-];
-
-const tabs = [
-  {
-    key: "drinks",
-    label: "Getrunken",
-  },
-  {
-    key: "paid",
-    label: "Bezahlt",
-  },
-  {
-    key: "rounds",
-    label: "Runden",
-  },
-];
-
 const value = ref(1);
-const isNumberInfoOpen = ref(false);
 
 const newGuestName = ref("");
-const selectedMemberTab = ref(0);
+const selectedMemberTab = ref<"member" | "guest">("member");
+const selectedModeTab = ref<"drinks" | "rounds" | "paid">("drinks");
 
 const members = await useFetch("/api/members", {
   query: {
-    role: memberTabs[selectedMemberTab.value].key,
+    role: selectedMemberTab.value,
   },
 });
 
 watch(selectedMemberTab, async () => {
   members.data.value = await $fetch("/api/members", {
     query: {
-      role: memberTabs[selectedMemberTab.value].key,
+      role: selectedMemberTab.value,
     },
   });
-});
-
-const selectedTab = computed({
-  get() {
-    const index = tabs.findIndex((tab) => tab.label === route.query.tab);
-    return index === -1 ? 0 : index;
-  },
-  set(value) {
-    // Hash is specified here to prevent the page from scrolling to the top
-    router.replace({
-      query: { tab: tabs[value].label },
-      hash: `#${tabs[value].label}`,
-    });
-  },
-});
-
-const colums = computed(() => {
-  const base = [
-    {
-      key: "name",
-      label: "Name",
-    },
-  ];
-
-  if (selectedTab.value === 0) {
-    base.push({ key: "drinks", label: "Getrunken" });
-  } else if (selectedTab.value === 1) {
-    base.push({ key: "paid", label: "Bezahlt" });
-    base.push({ key: "balance", label: "Guthaben" });
-  } else if (selectedTab.value === 2) {
-    base.push({ key: "rounds", label: "Runden" });
-  } else if (selectedTab.value === 3) {
-    base.push({ key: "paid", label: "Gäste" });
-  }
-
-  return base;
 });
 
 const submit = async () => {
@@ -105,12 +45,12 @@ const submit = async () => {
   const response = await $fetch("/api/members", {
     method: "POST",
     query: {
-      role: memberTabs[selectedMemberTab.value].key,
+      role: selectedMemberTab.value,
     },
     body: {
       users: uniqueMembers.map((user) => user.userId),
       value: value.value,
-      mode: tabs[selectedTab.value].key,
+      mode: selectedModeTab.value,
     },
   });
   members.data.value = response;
@@ -134,36 +74,33 @@ const addNewGuest = async () => {
     },
   });
 };
-
-function select(row: Row) {
-  const index = selectedUsers.value.findIndex(
-    (item) => item.userId === row.userId
-  );
-  if (index === -1) {
-    selectedUsers.value.push(row);
-  } else {
-    selectedUsers.value.splice(index, 1);
-  }
-}
 </script>
 
 <template>
   <div class="flex flex-col h-full">
     <div>
-      <select>
-        <option v-for="memberTab of memberTabs">
-          {{ memberTab.label }}
-        </option>
-      </select>
+      <Tabs v-model="selectedMemberTab">
+        <TabsList>
+          <TabsTrigger value="member"> Mitglieder </TabsTrigger>
+          <TabsTrigger value="guest"> Gäste </TabsTrigger>
+        </TabsList>
+      </Tabs>
+      <Tabs v-model="selectedModeTab">
+        <TabsList>
+          <TabsTrigger value="drinks"> Getrunken </TabsTrigger>
+          <TabsTrigger value="paid"> Bezahlt </TabsTrigger>
+          <TabsTrigger value="rounds"> Runden </TabsTrigger>
+        </TabsList>
+      </Tabs>
       <!-- <UTabs :items="memberTabs" v-model="selectedMemberTab" class="m-5" /> -->
       <!-- <UTabs :items="tabs" v-model="selectedTab" class="m-5" /> -->
     </div>
     <div v-if="selectedUsers" class="flex flex-col h-full">
       <div
-        v-if="selectedMemberTab === 1"
+        v-if="selectedMemberTab === 'guest'"
         class="flex flex-col gap-3 items-center"
       >
-        <input v-model="newGuestName" type="text" class="w-full" />
+        <Textarea v-model="newGuestName" type="text" class="w-full" />
         <button
           icon="material-symbols:add-2-rounded"
           :disabled="!newGuestName.length"
@@ -192,7 +129,7 @@ function select(row: Row) {
         <button @click="submit" :disabled="!selectedUsers.length" class="mt-2">
           <template v-if="value > 0"> + </template>
 
-          {{ value }} {{ tabs[selectedTab].label }}
+          {{ value }} {{ selectedModeTab }}
         </button>
       </div>
     </div>
