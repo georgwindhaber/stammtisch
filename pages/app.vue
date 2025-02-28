@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import MdButton from "~/components/material-design/md-button.vue";
+
 const route = useRoute();
 const router = useRouter();
 const { signOut } = useAuth();
 
-type Row = {
+export type Member = {
   name: string;
   paid: number;
   userId: number;
@@ -11,7 +13,7 @@ type Row = {
   rounds: number;
 };
 
-const selectedUsers = ref<Array<Row>>([]);
+const selectedUsersId = ref<Array<Member["userId"]>>([]);
 
 const value = ref(1);
 
@@ -34,26 +36,20 @@ watch(selectedMemberTab, async () => {
 });
 
 const submit = async () => {
-  const uniqueMembers = Array.from(
-    new Set(selectedUsers.value.map((obj) => obj.userId))
-  ).map((userId) => {
-    return selectedUsers.value.find((obj) => obj.userId === userId)!;
-  });
-
   const response = await $fetch("/api/members", {
     method: "POST",
     query: {
       role: selectedMemberTab.value,
     },
     body: {
-      users: uniqueMembers.map((user) => user.userId),
+      users: selectedUsersId.value,
       value: value.value,
       mode: selectedModeTab.value,
     },
   });
   members.data.value = response;
   value.value = 1;
-  selectedUsers.value = [];
+  selectedUsersId.value = [];
 };
 
 const membersInOrder = computed(() => {
@@ -72,12 +68,22 @@ const addNewGuest = async () => {
     },
   });
 };
+
+const toggleMember = (member: Member) => {
+  if (selectedUsersId.value.includes(member.userId)) {
+    selectedUsersId.value = selectedUsersId.value.filter(
+      (m) => m !== member.userId
+    );
+  } else {
+    selectedUsersId.value.push(member.userId);
+  }
+};
 </script>
 
 <template>
   <div class="flex flex-col h-full bg-surface text-on-surface">
     <div>
-      <Tabs v-model="selectedMemberTab">
+      <!-- <Tabs v-model="selectedMemberTab">
         <TabsList>
           <TabsTrigger value="member"> Mitglieder </TabsTrigger>
           <TabsTrigger value="guest"> Gäste </TabsTrigger>
@@ -89,23 +95,23 @@ const addNewGuest = async () => {
           <TabsTrigger value="paid"> Bezahlt </TabsTrigger>
           <TabsTrigger value="rounds"> Runden </TabsTrigger>
         </TabsList>
-      </Tabs>
+      </Tabs> -->
       <!-- <UTabs :items="memberTabs" v-model="selectedMemberTab" class="m-5" /> -->
       <!-- <UTabs :items="tabs" v-model="selectedTab" class="m-5" /> -->
     </div>
-    <div v-if="selectedUsers" class="flex flex-col h-full">
+    <div v-if="selectedUsersId" class="flex flex-col h-full">
       <div
         v-if="selectedMemberTab === 'guest'"
         class="flex flex-col gap-3 items-center"
       >
         <textarea v-model="newGuestName" type="text" class="w-full" />
-        <button
+        <md-button
           icon="material-symbols:add-2-rounded"
           :disabled="!newGuestName.length"
           @click="addNewGuest"
         >
           Gast hinzufügen
-        </button>
+        </md-button>
       </div>
 
       <!-- <UTable
@@ -123,16 +129,24 @@ const addNewGuest = async () => {
           <input v-model="value" type="number" step="1" />
         </div>
 
-        {{ membersInOrder }}
-        <st-button
+        <section class="flex flex-col gap-3 w-full max-w-[400px] px-3">
+          <st-member
+            v-for="member of membersInOrder"
+            :member="member"
+            :selected="selectedUsersId.includes(member.userId)"
+            @click="toggleMember(member)"
+          />
+        </section>
+
+        <md-button
           @click="submit"
-          :disabled="!selectedUsers.length"
+          :disabled="!selectedUsersId.length"
           class="mt-2"
         >
           <template v-if="value > 0"> + </template>
 
           {{ value }} {{ selectedModeTab }}
-        </st-button>
+        </md-button>
       </div>
     </div>
     <div class="flex-1" />
