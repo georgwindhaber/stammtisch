@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import Textarea from "~/components/textarea/textarea.vue";
-
 const route = useRoute();
 const router = useRouter();
 const { signOut } = useAuth();
@@ -77,7 +75,7 @@ const addNewGuest = async () => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col h-full bg-surface text-on-surface">
     <div>
       <Tabs v-model="selectedMemberTab">
         <TabsList>
@@ -100,7 +98,7 @@ const addNewGuest = async () => {
         v-if="selectedMemberTab === 'guest'"
         class="flex flex-col gap-3 items-center"
       >
-        <Textarea v-model="newGuestName" type="text" class="w-full" />
+        <textarea v-model="newGuestName" type="text" class="w-full" />
         <button
           icon="material-symbols:add-2-rounded"
           :disabled="!newGuestName.length"
@@ -126,11 +124,15 @@ const addNewGuest = async () => {
         </div>
 
         {{ membersInOrder }}
-        <button @click="submit" :disabled="!selectedUsers.length" class="mt-2">
+        <st-button
+          @click="submit"
+          :disabled="!selectedUsers.length"
+          class="mt-2"
+        >
           <template v-if="value > 0"> + </template>
 
           {{ value }} {{ selectedModeTab }}
-        </button>
+        </st-button>
       </div>
     </div>
     <div class="flex-1" />
