@@ -6,7 +6,7 @@ defineProps<{ member: Member; selected: boolean }>();
 
 <template>
   <button
-    class="flex flex-col gap-2 bg-surface-container-lowest rounded-xl px-4 py-3"
+    class="flex flex-col gap-2 bg-surface-container-lowest rounded-md px-4 py-3"
     :class="{ 'outline outline-primary': selected }"
   >
     <div class="flex justify-between">

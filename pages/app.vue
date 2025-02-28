@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import MdButton from "~/components/material-design/md-button.vue";
+import MdIconButton from "~/components/material-design/md-icon-button.vue";
+import MdNumber from "~/components/material-design/md-number.vue";
 
-const route = useRoute();
-const router = useRouter();
 const { signOut } = useAuth();
 
 export type Member = {
@@ -36,20 +36,22 @@ watch(selectedMemberTab, async () => {
 });
 
 const submit = async () => {
+  const cloneUserIds = [...selectedUsersId.value];
+  selectedUsersId.value = [];
+
   const response = await $fetch("/api/members", {
     method: "POST",
     query: {
       role: selectedMemberTab.value,
     },
     body: {
-      users: selectedUsersId.value,
+      users: cloneUserIds,
       value: value.value,
       mode: selectedModeTab.value,
     },
   });
   members.data.value = response;
   value.value = 1;
-  selectedUsersId.value = [];
 };
 
 const membersInOrder = computed(() => {
@@ -125,10 +127,6 @@ const toggleMember = (member: Member) => {
         @select="select"
       /> -->
       <div class="flex flex-col gap-3 w-full items-center mt-5">
-        <div class="flex gap-3">
-          <input v-model="value" type="number" step="1" />
-        </div>
-
         <section class="flex flex-col gap-3 w-full max-w-[400px] px-3">
           <st-member
             v-for="member of membersInOrder"
@@ -137,6 +135,18 @@ const toggleMember = (member: Member) => {
             @click="toggleMember(member)"
           />
         </section>
+
+        <div class="flex gap-3">
+          <md-icon-button
+            icon="material-symbols:remove-rounded"
+            @click="value--"
+          />
+          <md-number v-model="value" type="number" step="1" />
+          <md-icon-button
+            icon="material-symbols:add-2-rounded"
+            @click="value++"
+          />
+        </div>
 
         <md-button
           @click="submit"
