@@ -13,7 +13,9 @@ defineProps<{ member: Member; selected: boolean }>();
       {{ member.name }}
     </span>
     <div class="flex-1" />
-    <div class="flex justify-end gap-3 text-sm text-secondary mr-3">
+    <div
+      class="flex justify-end items-center gap-3 text-sm text-secondary mr-3"
+    >
       <span class="flex justify-center items-center gap-1">
         <icon name="material-symbols:groups-rounded" class="text-lg" />
         {{ member.rounds ?? 0 }}
