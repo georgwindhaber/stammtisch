@@ -2,6 +2,7 @@
 import MdButton from "~/components/material-design/md-button.vue";
 import MdIconButton from "~/components/material-design/md-icon-button.vue";
 import MdNumber from "~/components/material-design/md-number.vue";
+import MdTab from "~/components/material-design/md-tab.vue";
 
 const { signOut } = useAuth();
 
@@ -18,36 +19,35 @@ const selectedUsersId = ref<Array<Member["userId"]>>([]);
 const value = ref(1);
 
 const newGuestName = ref("");
-const selectedMemberTab = ref<"member" | "guest">("member");
-const selectedModeTab = ref<"drinks" | "rounds" | "paid">("drinks");
+const currentTab = ref<"member" | "guest" | "history">("member");
 
 const members = await useFetch("/api/members", {
   query: {
-    role: selectedMemberTab.value,
+    role: currentTab.value,
   },
 });
 
-watch(selectedMemberTab, async () => {
+watch(currentTab, async () => {
   members.data.value = await $fetch("/api/members", {
     query: {
-      role: selectedMemberTab.value,
+      role: currentTab.value,
     },
   });
 });
 
-const submit = async () => {
+const submit = async (mode: string) => {
   const cloneUserIds = [...selectedUsersId.value];
   selectedUsersId.value = [];
 
   const response = await $fetch("/api/members", {
     method: "POST",
     query: {
-      role: selectedMemberTab.value,
+      role: currentTab.value,
     },
     body: {
       users: cloneUserIds,
       value: value.value,
-      mode: selectedModeTab.value,
+      mode: mode,
     },
   });
   members.data.value = response;
@@ -84,26 +84,31 @@ const toggleMember = (member: Member) => {
 
 <template>
   <div class="flex flex-col h-full bg-surface text-on-surface">
-    <div>
-      <!-- <Tabs v-model="selectedMemberTab">
-        <TabsList>
-          <TabsTrigger value="member"> Mitglieder </TabsTrigger>
-          <TabsTrigger value="guest"> Gäste </TabsTrigger>
-        </TabsList>
-      </Tabs>
-      <Tabs v-model="selectedModeTab">
-        <TabsList>
-          <TabsTrigger value="drinks"> Getrunken </TabsTrigger>
-          <TabsTrigger value="paid"> Bezahlt </TabsTrigger>
-          <TabsTrigger value="rounds"> Runden </TabsTrigger>
-        </TabsList>
-      </Tabs> -->
-      <!-- <UTabs :items="memberTabs" v-model="selectedMemberTab" class="m-5" /> -->
-      <!-- <UTabs :items="tabs" v-model="selectedTab" class="m-5" /> -->
+    <div
+      class="flex w-full justify-center items-center mt-5 max-w-[400px] px-3 mx-auto"
+    >
+      <md-tab
+        :selected="currentTab === 'member'"
+        @click="currentTab = 'member'"
+      >
+        <icon name="material-symbols:award-star-rounded" />
+        Mitglieder
+      </md-tab>
+      <md-tab :selected="currentTab === 'guest'" @click="currentTab = 'guest'">
+        <icon name="material-symbols:family-restroom-rounded" />
+        Gäste
+      </md-tab>
+      <md-tab
+        :selected="currentTab === 'history'"
+        @click="currentTab = 'history'"
+      >
+        <icon name="material-symbols:history-rounded" />
+        Verlauf
+      </md-tab>
     </div>
     <div v-if="selectedUsersId" class="flex flex-col h-full">
       <div
-        v-if="selectedMemberTab === 'guest'"
+        v-if="currentTab === 'guest'"
         class="flex flex-col gap-3 items-center"
       >
         <textarea v-model="newGuestName" type="text" class="w-full" />
@@ -116,18 +121,10 @@ const toggleMember = (member: Member) => {
         </md-button>
       </div>
 
-      <!-- <UTable
-        v-model="selectedUsers"
-        :empty-state="{
-          icon: 'i-heroicons-circle-stack-20-solid',
-          label: 'Keine Einträge',
-        }"
-        :rows="membersInOrder"
-        :columns="colums"
-        @select="select"
-      /> -->
-      <div class="flex flex-col gap-3 w-full items-center mt-5">
-        <section class="flex flex-col gap-3 w-full max-w-[400px] px-3">
+      <div
+        class="flex flex-col gap-3 w-full items-center mt-5 max-w-[400px] px-3 mx-auto"
+      >
+        <section class="flex flex-col gap-3 w-full">
           <st-member
             v-for="member of membersInOrder"
             :member="member"
@@ -136,27 +133,55 @@ const toggleMember = (member: Member) => {
           />
         </section>
 
-        <div class="flex gap-3">
+        <div class="flex gap-3 w-full">
           <md-icon-button
             icon="material-symbols:remove-rounded"
             @click="value--"
           />
-          <md-number v-model="value" type="number" step="1" />
+          <md-number
+            v-model="value"
+            type="number"
+            step="1"
+            class="flex-1 min-w-12 max-w-auto"
+          />
           <md-icon-button
             icon="material-symbols:add-2-rounded"
             @click="value++"
           />
         </div>
 
-        <md-button
-          @click="submit"
-          :disabled="!selectedUsersId.length"
-          class="mt-2"
-        >
-          <template v-if="value > 0"> + </template>
-
-          {{ value }} {{ selectedModeTab }}
-        </md-button>
+        <div class="flex gap-1 justify-between w-full">
+          <md-button
+            @click="submit('rounds')"
+            :disabled="!selectedUsersId.length"
+            class="mt-2 flex justify-center leading-0 gap-2 items-center"
+          >
+            <template v-if="value > 0"> + </template>
+            {{ value }}
+            <icon name="material-symbols:groups-rounded" class="text-lg" />
+          </md-button>
+          <md-button
+            @click="submit('paid')"
+            :disabled="!selectedUsersId.length"
+            class="mt-2 flex justify-center leading-0 gap-2 items-center"
+          >
+            <template v-if="value > 0"> + </template>
+            {{ value }}
+            <icon
+              name="material-symbols:euro-rounded"
+              class="text-md translate-y-[1px]"
+            />
+          </md-button>
+          <md-button
+            @click="submit('drinks')"
+            :disabled="!selectedUsersId.length"
+            class="mt-2 flex justify-center leading-0 gap-2 items-center"
+          >
+            <template v-if="value > 0"> + </template>
+            {{ value }}
+            <icon name="tdesign:beer" class="translate-y-[1px]" />
+          </md-button>
+        </div>
       </div>
     </div>
     <div class="flex-1" />

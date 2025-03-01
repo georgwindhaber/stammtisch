@@ -6,6 +6,6 @@ const model = defineModel();
   <input
     type="number"
     v-model="model"
-    class="p-3 bg-surface-container-low rounded-full text-center"
+    class="p-1 bg-surface-container-low rounded-full text-center"
   />
 </template>
