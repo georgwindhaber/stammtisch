@@ -7,12 +7,14 @@ const drinks = useFetch("/api/drinks");
 </script>
 
 <template>
-  <main class="flex min-h-screen flex-col items-center justify-center p-24">
+  <main
+    class="flex min-h-screen flex-col items-center justify-center p-24 text-on-surface"
+  >
     <div>
       <h1 class="text-3xl text-center font-bold mb-5">Kellerbierrunde</h1>
       <img
         src="/logo.png"
-        class=""
+        class="invert"
         width="300"
         height="300"
         priority
