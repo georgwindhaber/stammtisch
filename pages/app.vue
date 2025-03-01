@@ -63,10 +63,12 @@ const membersInOrder = computed(() => {
 });
 
 const addNewGuest = async () => {
+  const newGuestNameClone = newGuestName.value;
+  newGuestName.value = "";
   members.data.value = await $fetch("/api/guests", {
     method: "POST",
     body: {
-      name: newGuestName.value,
+      name: newGuestNameClone,
     },
   });
 };
@@ -98,29 +100,15 @@ const toggleMember = (member: Member) => {
         <icon name="material-symbols:family-restroom-rounded" />
         Gäste
       </md-tab>
-      <md-tab
+      <!-- <md-tab
         :selected="currentTab === 'history'"
         @click="currentTab = 'history'"
       >
         <icon name="material-symbols:history-rounded" />
         Verlauf
-      </md-tab>
+      </md-tab> -->
     </div>
     <div v-if="selectedUsersId" class="flex flex-col h-full">
-      <div
-        v-if="currentTab === 'guest'"
-        class="flex flex-col gap-3 items-center"
-      >
-        <textarea v-model="newGuestName" type="text" class="w-full" />
-        <md-button
-          icon="material-symbols:add-2-rounded"
-          :disabled="!newGuestName.length"
-          @click="addNewGuest"
-        >
-          Gast hinzufügen
-        </md-button>
-      </div>
-
       <div
         class="flex flex-col gap-3 w-full items-center mt-5 max-w-[400px] px-3 mx-auto"
       >
@@ -180,6 +168,24 @@ const toggleMember = (member: Member) => {
             <template v-if="value > 0"> + </template>
             {{ value }}
             <icon name="tdesign:beer" class="translate-y-[1px]" />
+          </md-button>
+        </div>
+
+        <div
+          v-if="currentTab === 'guest'"
+          class="flex flex-col gap-3 mt-5 items-center w-full"
+        >
+          <material-design-md-text
+            v-model="newGuestName"
+            type="text"
+            class="w-full"
+          />
+          <md-button
+            icon="material-symbols:add-2-rounded"
+            :disabled="!newGuestName.length"
+            @click="addNewGuest"
+          >
+            Gast hinzufügen
           </md-button>
         </div>
       </div>
