@@ -5,7 +5,7 @@ defineProps<{ icon: string }>();
 <template>
   <button
     :class="[
-      'flex justify-center items-center bg-secondary-container text-on-secondary-container rounded-full size-12 text-2xl',
+      'flex justify-center items-center bg-secondary-container text-on-secondary-container rounded-full size-8 text-lg',
       'hover:cursor-pointer hover:bg-primary/88',
       'disabled:cursor-not-allowed disabled:bg-primary/12 disabled:text-on-surface/50',
     ]"

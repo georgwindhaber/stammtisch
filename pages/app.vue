@@ -108,7 +108,7 @@ const toggleMember = (member: Member) => {
         Verlauf
       </md-tab> -->
     </div>
-    <div v-if="selectedUsersId" class="flex flex-col h-full">
+    <div v-if="selectedUsersId" class="flex flex-col">
       <div
         class="flex flex-col gap-3 w-full items-center mt-5 max-w-[400px] px-3 mx-auto"
       >
@@ -121,7 +121,7 @@ const toggleMember = (member: Member) => {
           />
         </section>
 
-        <div class="flex gap-3 w-full">
+        <div class="flex gap-3 w-full mt-5">
           <md-icon-button
             icon="material-symbols:remove-rounded"
             @click="value--"
@@ -142,6 +142,7 @@ const toggleMember = (member: Member) => {
           <md-button
             @click="submit('rounds')"
             :disabled="!selectedUsersId.length"
+            theme="tonal"
             class="mt-2 flex justify-center leading-0 gap-2 items-center"
           >
             <template v-if="value > 0"> + </template>
@@ -151,6 +152,7 @@ const toggleMember = (member: Member) => {
           <md-button
             @click="submit('paid')"
             :disabled="!selectedUsersId.length"
+            theme="tonal"
             class="mt-2 flex justify-center leading-0 gap-2 items-center"
           >
             <template v-if="value > 0"> + </template>
@@ -191,7 +193,7 @@ const toggleMember = (member: Member) => {
       </div>
     </div>
     <div class="flex-1" />
-    <footer class="flex justify-center items-center w-full p-3">
+    <footer class="flex justify-center items-center w-full p-3 mt-8">
       <button @click="() => signOut({ callbackUrl: '/' })" variant="soft">
         Ausloggen
       </button>
