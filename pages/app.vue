@@ -4,7 +4,7 @@ import MdIconButton from "~/components/material-design/md-icon-button.vue";
 import MdNumber from "~/components/material-design/md-number.vue";
 import MdTab from "~/components/material-design/md-tab.vue";
 
-const { signOut } = useAuth();
+const { signOut, data } = useAuth();
 
 export type Member = {
   name: string;
@@ -197,7 +197,16 @@ const toggleMember = (member: Member) => {
     </div>
     <div class="flex-1" />
     <footer class="flex justify-center items-center w-full p-3 mt-8">
-      <button @click="() => signOut({ callbackUrl: '/' })" variant="soft">
+      <button
+        @click="() => signOut({ callbackUrl: '/' })"
+        variant="soft"
+        class="flex gap-3"
+      >
+        <img
+          v-if="data?.user?.image"
+          :src="data.user.image"
+          class="rounded-full size-8"
+        />
         Ausloggen
       </button>
     </footer>
