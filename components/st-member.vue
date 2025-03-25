@@ -6,8 +6,10 @@ defineProps<{ member: Member; selected: boolean; order: number }>();
 
 <template>
   <button
-    class="flex gap-2 py-2"
-    :class="{ 'outline outline-primary': selected }"
+    class="flex gap-2 py-2 px-3"
+    :class="{
+      'outline-2 -outline-offset-1 outline-primary rounded-lg': selected,
+    }"
   >
     <span>{{ order }}.</span>
     <span class="font-semibold text-left">
