@@ -3,14 +3,15 @@ defineProps<{ selected?: boolean }>();
 </script>
 
 <template>
-  <button
+  <nuxt-link
     class="bg-surface relative min-w-28 h-12 flex justify-center items-center gap-2"
-    :class="[selected ? 'text-on-surface' : 'text-on-surface-variant']"
+    active-class="group"
   >
-    <slot></slot>
+    <div class="text-on-surface-variant group-[&]:text-on-surface">
+      <slot></slot>
+    </div>
     <div
-      v-if="selected"
-      class="absolute bottom-0 w-full border-b-2 border-primary"
+      class="absolute bottom-0 w-full border-b-2 border-primary opacity-0 group-[&]:opacity-100"
     ></div>
-  </button>
+  </nuxt-link>
 </template>
