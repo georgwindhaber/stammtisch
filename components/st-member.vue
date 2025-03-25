@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import type { Member } from "~/pages/app.vue";
 
-defineProps<{ member: Member; selected: boolean }>();
+defineProps<{ member: Member; selected: boolean; order: number }>();
 </script>
 
 <template>
   <button
-    class="flex gap-2 bg-surface-container-lowest rounded-md px-4 py-3"
+    class="flex gap-2 py-2"
     :class="{ 'outline outline-primary': selected }"
   >
-    <span class="font-bold text-left">
+    <span>{{ order }}.</span>
+    <span class="font-semibold text-left">
       {{ member.name }}
     </span>
     <div class="flex-1" />

@@ -112,9 +112,12 @@ const toggleMember = (member: Member) => {
       <div
         class="flex flex-col gap-3 w-full items-center mt-5 max-w-[400px] px-3 mx-auto"
       >
-        <section class="flex flex-col gap-3 w-full">
+        <section
+          class="flex flex-col w-full divide-surface-container-highest divide-y-1"
+        >
           <st-member
-            v-for="member of membersInOrder"
+            v-for="(member, index) of membersInOrder"
+            :order="index + 1"
             :member="member"
             :selected="selectedUsersId.includes(member.userId)"
             @click="toggleMember(member)"
