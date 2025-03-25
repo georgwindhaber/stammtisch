@@ -6,7 +6,7 @@ defineProps<{ member: Member; selected: boolean; order: number }>();
 
 <template>
   <button
-    class="flex gap-2 py-2 px-3"
+    class="flex gap-2 py-3 px-3"
     :class="{
       'outline-2 -outline-offset-1 outline-primary rounded-lg': selected,
     }"
@@ -30,7 +30,7 @@ defineProps<{ member: Member; selected: boolean; order: number }>();
     </div>
     <div class="text-primary flex items-center justify-center gap-1">
       <icon name="tdesign:beer" />
-      <span>{{ member.drinks }}</span>
+      <span>{{ member.drinks ?? 0 }}</span>
     </div>
   </button>
 </template>
