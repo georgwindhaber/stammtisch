@@ -64,12 +64,25 @@ const toggleMember = (member: Member) => {
   emit("user-select", selectedUsersId.value);
 };
 
+const selectedOrder = ref<"name" | "rounds" | "paid" | "drinks">("drinks");
+
 const membersInOrder = computed(() => {
-  return members.data.value
-    ?.sort(
-      (member1, member2) => Number(member2.drinks) - Number(member1.drinks)
-    )
-    .map((m) => ({ ...m, balance: m.paid - m.drinks }));
+  const sortAndMapMembers = (key: "name" | "rounds" | "paid" | "drinks") => {
+    return members.data.value
+      ?.sort((member1, member2) => {
+        if (key === "name") {
+          return member1.name.localeCompare(member2.name, undefined, {
+            sensitivity: "base",
+          });
+        }
+        return Number(member2[key]) - Number(member1[key]);
+      })
+      .map((m) => ({ ...m, balance: m.paid - m.drinks }));
+  };
+
+  if (["name", "rounds", "paid", "drinks"].includes(selectedOrder.value)) {
+    return sortAndMapMembers(selectedOrder.value);
+  }
 });
 </script>
 
@@ -81,16 +94,27 @@ const membersInOrder = computed(() => {
       class="grid grid-cols-subgrid col-span-5 sticky top-0 gap-2 py-3 px-3 text-secondary bg-surface"
     >
       <div class="flex justify-center items-center">#</div>
-      <div class="flex items-center">Name</div>
-      <div class="flex justify-center items-center">
+      <button class="flex items-center" @click="selectedOrder = 'name'">
+        Name
+      </button>
+      <button
+        class="flex justify-center items-center"
+        @click="selectedOrder = 'rounds'"
+      >
         <icon name="material-symbols:groups-rounded" class="text-lg" />
-      </div>
-      <div class="flex justify-center items-center">
+      </button>
+      <button
+        class="flex justify-center items-center"
+        @click="selectedOrder = 'paid'"
+      >
         <icon name="material-symbols:euro-rounded" class="text-md" />
-      </div>
-      <div class="flex justify-center items-center font-bold text-primary">
+      </button>
+      <button
+        class="flex justify-center items-center font-bold text-primary"
+        @click="selectedOrder = 'drinks'"
+      >
         <icon name="tdesign:beer" />
-      </div>
+      </button>
     </div>
     <st-member
       v-for="(member, index) of membersInOrder"
