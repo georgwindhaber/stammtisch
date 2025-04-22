@@ -94,23 +94,50 @@ const membersInOrder = computed(() => {
       class="grid grid-cols-subgrid col-span-5 sticky top-0 gap-2 py-3 px-3 text-secondary bg-surface"
     >
       <div class="flex justify-center items-center">#</div>
-      <button class="flex items-center" @click="selectedOrder = 'name'">
+      <button
+        class="flex items-center"
+        :class="[
+          {
+            'text-primary bg-surface-container-lowest rounded-full':
+              selectedOrder === 'name',
+          },
+        ]"
+        @click="selectedOrder = 'name'"
+      >
         Name
       </button>
       <button
         class="flex justify-center items-center"
+        :class="[
+          {
+            'text-primary bg-surface-container-lowest rounded-full':
+              selectedOrder === 'rounds',
+          },
+        ]"
         @click="selectedOrder = 'rounds'"
       >
         <icon name="material-symbols:groups-rounded" class="text-lg" />
       </button>
       <button
         class="flex justify-center items-center"
+        :class="[
+          {
+            'text-primary bg-surface-container-lowest rounded-full':
+              selectedOrder === 'paid',
+          },
+        ]"
         @click="selectedOrder = 'paid'"
       >
         <icon name="material-symbols:euro-rounded" class="text-md" />
       </button>
       <button
-        class="flex justify-center items-center font-bold text-primary"
+        class="flex justify-center items-center font-bold"
+        :class="[
+          {
+            'text-primary bg-surface-container-lowest rounded-full':
+              selectedOrder === 'drinks',
+          },
+        ]"
         @click="selectedOrder = 'drinks'"
       >
         <icon name="tdesign:beer" />
