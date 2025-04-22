@@ -95,10 +95,10 @@ const membersInOrder = computed(() => {
     >
       <div class="flex justify-center items-center">#</div>
       <button
-        class="flex items-center"
+        class="flex items-center pl-3 -ml-3"
         :class="[
           {
-            'text-primary bg-surface-container-lowest rounded-full':
+            'text-primary bg-surface-container rounded-full':
               selectedOrder === 'name',
           },
         ]"
@@ -107,10 +107,10 @@ const membersInOrder = computed(() => {
         Name
       </button>
       <button
-        class="flex justify-center items-center"
+        class="flex justify-center items-center min-w-8"
         :class="[
           {
-            'text-primary bg-surface-container-lowest rounded-full':
+            'text-primary bg-surface-container rounded-full':
               selectedOrder === 'rounds',
           },
         ]"
@@ -119,10 +119,10 @@ const membersInOrder = computed(() => {
         <icon name="material-symbols:groups-rounded" class="text-lg" />
       </button>
       <button
-        class="flex justify-center items-center"
+        class="flex justify-center items-center min-w-8"
         :class="[
           {
-            'text-primary bg-surface-container-lowest rounded-full':
+            'text-primary bg-surface-container rounded-full':
               selectedOrder === 'paid',
           },
         ]"
@@ -131,10 +131,10 @@ const membersInOrder = computed(() => {
         <icon name="material-symbols:euro-rounded" class="text-md" />
       </button>
       <button
-        class="flex justify-center items-center font-bold"
+        class="flex justify-center items-center min-w-8 font-bold"
         :class="[
           {
-            'text-primary bg-surface-container-lowest rounded-full':
+            'text-primary bg-surface-container rounded-full':
               selectedOrder === 'drinks',
           },
         ]"
