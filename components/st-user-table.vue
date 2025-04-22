@@ -75,8 +75,23 @@ const membersInOrder = computed(() => {
 
 <template>
   <section
-    class="flex flex-col w-full divide-surface-container-highest divide-y-1"
+    class="grid grid-cols-1flex-col w-full divide-surface-container-highest divide-y-1"
   >
+    <div
+      class="grid grid-cols-subgrid col-span-5 sticky top-0 gap-2 py-3 px-3 text-secondary bg-surface"
+    >
+      <div class="flex justify-center items-center">#</div>
+      <div class="flex items-center">Name</div>
+      <div class="flex justify-center items-center">
+        <icon name="material-symbols:groups-rounded" class="text-lg" />
+      </div>
+      <div class="flex justify-center items-center">
+        <icon name="material-symbols:euro-rounded" class="text-md" />
+      </div>
+      <div class="flex justify-center items-center font-bold text-primary">
+        <icon name="tdesign:beer" />
+      </div>
+    </div>
     <st-member
       v-for="(member, index) of membersInOrder"
       :order="index + 1"
