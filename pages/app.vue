@@ -29,13 +29,10 @@ router.replace({ name: "members" });
         <icon name="material-symbols:family-restroom-rounded" />
         Gäste
       </md-tab>
-      <!-- <md-tab
-        :selected="currentTab === 'history'"
-        @click="currentTab = 'history'"
-      >
+      <md-tab :to="{ name: 'app-history' }" replace>
         <icon name="material-symbols:history-rounded" />
         Verlauf
-      </md-tab> -->
+      </md-tab>
     </div>
     <div class="flex flex-col">
       <div

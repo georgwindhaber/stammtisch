@@ -87,9 +87,7 @@ const membersInOrder = computed(() => {
 </script>
 
 <template>
-  <section
-    class="grid grid-cols-1flex-col w-full divide-surface-container-highest divide-y-1"
-  >
+  <section class="grid w-full divide-surface-container-highest divide-y-1">
     <div
       class="grid grid-cols-subgrid col-span-5 sticky top-0 gap-2 py-3 px-3 text-secondary bg-surface"
     >
