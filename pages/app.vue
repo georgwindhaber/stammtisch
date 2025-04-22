@@ -46,7 +46,7 @@ router.replace({ name: "members" });
       <button
         @click="() => signOut({ callbackUrl: '/' })"
         variant="soft"
-        class="flex gap-3"
+        class="flex justify-center items-center gap-3"
       >
         <img
           v-if="data?.user?.image"
