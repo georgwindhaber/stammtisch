@@ -17,22 +17,31 @@ const rows = [
 </script>
 
 <template>
-  <div class="grid grid-cols-4 gap-4">
-    <div
-      v-for="(entry, index) of rows"
-      class="grid grid-cols-subgrid col-span-4"
-    >
-      <div>
-        {{ index }}
+  <div class="flex flex-col divide-surface-container-highest w-full divide-y-1">
+    <div v-for="entry of rows" class="py-3">
+      <div class="text-primary flex items-center gap-2">
+        <icon
+          v-if="entry.type === 'drinks'"
+          name="tdesign:beer"
+          class="text-lg"
+        />
+        <icon
+          v-else-if="entry.type === 'paid'"
+          name="material-symbols:euro-rounded"
+          class="text-lg"
+        />
+        <icon
+          v-else-if="entry.type === 'rounds'"
+          name="material-symbols:groups-rounded"
+          class="text-lg"
+        />
+        {{ entry.value }} -
+        {{ entry.userName }}
       </div>
-      <div>
-        {{ entry.userId }}
-      </div>
-      <div>
-        {{ new Date(entry.createdAt).toLocaleString() }}
-      </div>
-      <div>
-        {{ entry.type }}
+      <div class="text-secondary text-sm">
+        {{ new Date(entry.createdAt).toLocaleString() }},
+
+        {{ entry.createdByName }}
       </div>
     </div>
   </div>

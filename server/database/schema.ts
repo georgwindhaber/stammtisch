@@ -12,6 +12,7 @@ export const users = sqliteTable("users", {
 export const drinks = sqliteTable("drinks", {
   drinkId: integer("drink_id").primaryKey({ autoIncrement: true }),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  createdBy: integer("created_by").references(() => users.userId),
   userId: integer("user_id").references(() => users.userId),
   value: integer("value").notNull().default(1),
 });
@@ -19,6 +20,7 @@ export const drinks = sqliteTable("drinks", {
 export const rounds = sqliteTable("rounds", {
   roundId: integer("round_id").primaryKey({ autoIncrement: true }),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  createdBy: integer("created_by").references(() => users.userId),
   userId: integer("user_id").references(() => users.userId),
   value: integer("value").notNull().default(1),
 });
@@ -26,6 +28,7 @@ export const rounds = sqliteTable("rounds", {
 export const paid = sqliteTable("paid", {
   paidId: integer("paid_id").primaryKey({ autoIncrement: true }),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  createdBy: integer("created_by").references(() => users.userId),
   userId: integer("user_id").references(() => users.userId),
   value: integer("value").notNull().default(1),
 });
