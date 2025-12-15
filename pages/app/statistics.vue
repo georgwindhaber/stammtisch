@@ -99,7 +99,14 @@ onMounted(() => {
 
   // Set up dimensions
   const margin = { top: 60, right: 150, bottom: 30, left: 200 };
-  const width = 800 - margin.left - margin.right;
+
+  // Get container width for responsive design
+  const getContainerWidth = () => {
+    return chartContainer.value?.clientWidth || 800;
+  };
+
+  let containerWidth = getContainerWidth();
+  let width = containerWidth - margin.left - margin.right;
   const height = 550 - margin.top - margin.bottom;
   const barHeight = 30;
   const topN = 10; // Show top 10 users
@@ -113,8 +120,31 @@ onMounted(() => {
   const svg = d3
     .select(chartContainer.value)
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
+    .attr("width", "100%")
+    .attr("height", height + margin.top + margin.bottom)
+    .attr(
+      "viewBox",
+      `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`
+    )
+    .attr("preserveAspectRatio", "xMinYMin meet");
+
+  // Update viewBox on resize
+  const updateDimensions = () => {
+    containerWidth = getContainerWidth();
+    width = containerWidth - margin.left - margin.right;
+    svg.attr(
+      "viewBox",
+      `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`
+    );
+    // Update time label position
+    g.selectAll<SVGTextElement, unknown>(".time-label").attr("x", width / 2);
+  };
+
+  // Handle window resize
+  const resizeObserver = new ResizeObserver(updateDimensions);
+  if (chartContainer.value) {
+    resizeObserver.observe(chartContainer.value);
+  }
 
   const g = svg
     .append("g")
@@ -134,6 +164,7 @@ onMounted(() => {
   // Create initial bars
   let currentData = timeSeriesData[0];
   let currentIndex = 0;
+  let animationInterval: ReturnType<typeof setInterval> | null = null;
 
   const updateChart = (data: (typeof timeSeriesData)[0]) => {
     const topUsers = data.users.slice(0, topN);
@@ -279,34 +310,40 @@ onMounted(() => {
         .attr("y", -35)
         .text(() => new Date(currentData.time).toLocaleString("de-DE"));
     } else {
-      currentIndex = 0;
-      currentData = timeSeriesData[0];
-      updateChart(currentData);
+      // Stop animation when reaching the end
+      if (animationInterval) {
+        clearInterval(animationInterval);
+        animationInterval = null;
+      }
     }
   };
 
   // Auto-animate every 2 seconds
-  const interval = setInterval(animate, animationDuration);
+  animationInterval = setInterval(animate, animationDuration);
 
   // Cleanup on unmount
   onUnmounted(() => {
-    clearInterval(interval);
+    if (animationInterval) {
+      clearInterval(animationInterval);
+    }
+    resizeObserver.disconnect();
   });
 });
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
     <h1>Statistics</h1>
-    <div ref="chartContainer" class="chart-container"></div>
+    <div ref="chartContainer" class="chart-container w-dvw"></div>
   </div>
 </template>
 
 <style scoped>
 .chart-container {
-  width: 100%;
-  max-width: 1000px;
   margin: 20px auto;
+  position: absolute;
+  left: 0;
+  right: 0;
 }
 
 :deep(.bar) {
