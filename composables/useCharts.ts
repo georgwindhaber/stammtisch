@@ -144,8 +144,8 @@ export function createBarChartRace(
   const barHeight = 30;
   const topN = 10; // Show top 10 users
 
-  const animationDuration = 25;
-  const speed = 15;
+  const animationDuration = 75;
+  const speed = 50;
 
   // Clear previous content
   d3.select(container.value).selectAll("*").remove();
