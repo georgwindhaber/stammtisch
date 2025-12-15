@@ -395,16 +395,15 @@ export function createStackedAreaChart(
     dayMap.set(drink.userId, (dayMap.get(drink.userId) || 0) + drink.value);
   });
 
-  // Get date range - exactly one year
+  // Get date range - from first to last entry
   const allDates = Array.from(dailyDataMap.keys()).map((d) => new Date(d));
   const minDate = allDates.length > 0 ? d3.min(allDates)! : new Date();
-  const maxDate = new Date(minDate);
-  maxDate.setFullYear(maxDate.getFullYear() + 1);
+  const maxDate = allDates.length > 0 ? d3.max(allDates)! : new Date();
 
-  // Generate all days in the year range
+  // Generate all days in the range (inclusive of both start and end dates)
   const allDays: Date[] = [];
   const currentDate = new Date(minDate);
-  while (currentDate < maxDate) {
+  while (currentDate <= maxDate) {
     allDays.push(new Date(currentDate));
     currentDate.setDate(currentDate.getDate() + 1);
   }
@@ -546,6 +545,10 @@ export function createStackedAreaChart(
     .attr("text-anchor", "end")
     .attr("dy", "0.35em")
     .style("fill", "#333")
+    .style("stroke", "white")
+    .style("stroke-width", "3px")
+    .style("stroke-linejoin", "round")
+    .style("paint-order", "stroke fill")
     .style("font-size", "12px")
     .style("font-weight", "500")
     .text((d) => {
