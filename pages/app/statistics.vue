@@ -1,346 +1,59 @@
 <script setup lang="ts">
-import * as d3 from "d3";
+import {
+  createBarChartRace,
+  createStackedAreaChart,
+  type DrinkEntry,
+} from "~/composables/useCharts";
 
 const drinks = await useFetch("/api/statistics");
 
 const chartContainer = ref<HTMLElement | null>(null);
-
-interface DrinkEntry {
-  value: number;
-  name: string | null;
-  userId: number | null;
-  createdAt: Date | string | number;
-}
-
-interface UserData {
-  userId: number;
-  name: string;
-  total: number;
-}
+const areaChartContainer = ref<HTMLElement | null>(null);
 
 onMounted(() => {
   if (!drinks.data.value || !chartContainer.value) return;
 
   const data = drinks.data.value as unknown as DrinkEntry[];
 
-  // Group drinks by userId and create time-based cumulative data
-  const userMap = new Map<
-    number,
-    { name: string; entries: Array<{ time: number; value: number }> }
-  >();
+  // Create bar chart race
+  const cleanupBarChart = createBarChartRace(chartContainer, data);
 
-  data.forEach((drink) => {
-    if (!drink.userId) return;
-    const userId = drink.userId;
-    if (!userMap.has(userId)) {
-      userMap.set(userId, {
-        name: drink.name || `User ${userId}`,
-        entries: [],
-      });
-    }
-    const user = userMap.get(userId)!;
-    const time =
-      drink.createdAt instanceof Date
-        ? drink.createdAt.getTime()
-        : typeof drink.createdAt === "string"
-        ? new Date(drink.createdAt).getTime()
-        : drink.createdAt;
-    user.entries.push({ time, value: drink.value });
-  });
-
-  // Sort entries by time and create cumulative totals
-  const timePoints = new Set<number>();
-  userMap.forEach((user) => {
-    user.entries.sort((a, b) => a.time - b.time);
-    let cumulative = 0;
-    user.entries = user.entries.map((entry) => {
-      cumulative += entry.value;
-      timePoints.add(entry.time);
-      return { time: entry.time, value: cumulative };
-    });
-  });
-
-  const sortedTimePoints = Array.from(timePoints).sort((a, b) => a - b);
-
-  // Create data for each time point
-  const timeSeriesData: Array<{ time: number; users: UserData[] }> = [];
-
-  sortedTimePoints.forEach((time) => {
-    const users: UserData[] = [];
-    userMap.forEach((userData, userId) => {
-      // Find the last entry before or at this time
-      const relevantEntry = userData.entries
-        .filter((e) => e.time <= time)
-        .sort((a, b) => b.time - a.time)[0];
-
-      if (relevantEntry) {
-        users.push({
-          userId,
-          name: userData.name,
-          total: relevantEntry.value,
-        });
-      }
-    });
-
-    // Sort by total descending
-    users.sort((a, b) => b.total - a.total);
-    timeSeriesData.push({ time, users });
-  });
-
-  // Check if we have data
-  if (timeSeriesData.length === 0) {
-    d3.select(chartContainer.value)
-      .append("div")
-      .style("text-align", "center")
-      .style("padding", "40px")
-      .text("No data available");
-    return;
-  }
-
-  // Set up dimensions
-  const margin = { top: 60, right: 150, bottom: 30, left: 200 };
-
-  // Get container width for responsive design
-  const getContainerWidth = () => {
-    return chartContainer.value?.clientWidth || 800;
-  };
-
-  let containerWidth = getContainerWidth();
-  let width = containerWidth - margin.left - margin.right;
-  const height = 550 - margin.top - margin.bottom;
-  const barHeight = 30;
-  const topN = 10; // Show top 10 users
-
-  const animationDuration = 300;
-  const speed = 250;
-
-  // Clear previous content
-  d3.select(chartContainer.value).selectAll("*").remove();
-
-  const svg = d3
-    .select(chartContainer.value)
-    .append("svg")
-    .attr("width", "100%")
-    .attr("height", height + margin.top + margin.bottom)
-    .attr(
-      "viewBox",
-      `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`
-    )
-    .attr("preserveAspectRatio", "xMinYMin meet");
-
-  // Update viewBox on resize
-  const updateDimensions = () => {
-    containerWidth = getContainerWidth();
-    width = containerWidth - margin.left - margin.right;
-    svg.attr(
-      "viewBox",
-      `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`
-    );
-    // Update time label position
-    g.selectAll<SVGTextElement, unknown>(".time-label").attr("x", width / 2);
-  };
-
-  // Handle window resize
-  const resizeObserver = new ResizeObserver(updateDimensions);
-  if (chartContainer.value) {
-    resizeObserver.observe(chartContainer.value);
-  }
-
-  const g = svg
-    .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
-
-  // Find max value for scaling
-  const maxValue =
-    d3.max(timeSeriesData, (d: (typeof timeSeriesData)[0]) =>
-      d3.max(d.users.slice(0, topN), (u: UserData) => u.total)
-    ) || 1;
-
-  // Create scales
-  const xScale = d3.scaleLinear().domain([0, maxValue]).range([0, width]);
-
-  const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
-  // Create initial bars
-  let currentData = timeSeriesData[0];
-  let currentIndex = 0;
-  let animationInterval: ReturnType<typeof setInterval> | null = null;
-
-  const updateChart = (data: (typeof timeSeriesData)[0]) => {
-    const topUsers = data.users.slice(0, topN);
-
-    // Update scales
-    const maxVal = d3.max(topUsers, (u: UserData) => u.total) || 1;
-    xScale.domain([0, maxVal]);
-
-    // Bind data
-    const bars = g
-      .selectAll<SVGGElement, UserData>(".bar-group")
-      .data(topUsers, (d: UserData) => d.userId.toString());
-
-    // Enter: create new bars
-    const barEnter = bars
-      .enter()
-      .append("g")
-      .attr("class", "bar-group")
-      .attr(
-        "transform",
-        (_d: UserData, i: number) => `translate(0, ${i * barHeight})`
-      );
-
-    barEnter
-      .append("rect")
-      .attr("class", "bar")
-      .attr("height", barHeight - 2)
-      .attr("fill", (d: UserData) => colorScale(d.userId.toString()))
-      .attr("x", 0)
-      .attr("width", 0);
-
-    barEnter
-      .append("text")
-      .attr("class", "index")
-      .attr("x", -220)
-      .attr("y", barHeight / 2)
-      .attr("dy", "0.35em")
-      .attr("text-anchor", "end")
-      .attr("fill", "#d3d3d3")
-      .style("font-size", "14px")
-      .style("font-weight", "bold")
-      .text((_d: UserData, i: number) => `#${i + 1}`);
-
-    barEnter
-      .append("text")
-      .attr("class", "label")
-      .attr("x", -10)
-      .attr("y", barHeight / 2)
-      .attr("dy", "0.35em")
-      .attr("text-anchor", "end")
-      .attr("fill", "#d3d3d3")
-      .style("font-size", "14px")
-      .text((d: UserData) => d.name);
-
-    barEnter
-      .append("text")
-      .attr("class", "value")
-      .attr("x", 5)
-      .attr("y", barHeight / 2)
-      .attr("dy", "0.35em")
-      .attr("fill", "#333")
-      .style("font-size", "14px")
-      .text((d: UserData) => d.total.toString());
-
-    // Update: animate bars
-    const barUpdate = bars.merge(barEnter);
-
-    barUpdate
-      .select<SVGRectElement>(".bar")
-      .transition()
-      .duration(speed)
-      .attr("width", (d: UserData) => xScale(d.total));
-
-    barUpdate
-      .select<SVGTextElement>(".value")
-      .transition()
-      .duration(speed)
-      .text((d: UserData) => d.total.toString());
-
-    barUpdate
-      .select<SVGTextElement>(".index")
-      .transition()
-      .duration(speed)
-      .text((_d: UserData, i: number) => `#${i + 1}`);
-
-    // Update positions based on ranking
-    barUpdate
-      .transition()
-      .duration(speed)
-      .attr(
-        "transform",
-        (_d: UserData, i: number) => `translate(0, ${i * barHeight})`
-      );
-
-    // Exit: remove old bars
-    bars
-      .exit<SVGGElement>()
-      .transition()
-      .duration(speed)
-      .attr("transform", () => `translate(0, ${(topN + 1) * barHeight})`)
-      .remove();
-  };
-
-  // Initial render
-  updateChart(currentData);
-
-  // Create initial time label
-  g.append("text")
-    .attr("class", "time-label")
-    .attr("x", width / 2)
-    .attr("y", -35)
-    .attr("text-anchor", "middle")
-    .attr("fill", "white")
-    .style("font-size", "28px")
-    .style("font-weight", "bold")
-    .text(() => new Date(currentData.time).toLocaleString("de-DE"));
-
-  // Animate through time
-  const animate = () => {
-    if (currentIndex < timeSeriesData.length - 1) {
-      currentIndex++;
-      currentData = timeSeriesData[currentIndex];
-      updateChart(currentData);
-
-      // Update time label if needed
-      const timeLabel = g
-        .selectAll<SVGTextElement, typeof currentData>(".time-label")
-        .data([currentData]);
-      timeLabel
-        .enter()
-        .append("text")
-        .attr("class", "time-label")
-        .attr("x", width / 2)
-        .attr("y", -35)
-        .attr("text-anchor", "middle")
-        .attr("fill", "white")
-        .style("font-size", "28px")
-        .style("font-weight", "bold")
-        .merge(timeLabel)
-        .attr("fill", "white")
-        .style("font-size", "28px")
-        .style("font-weight", "bold")
-        .attr("y", -35)
-        .text(() => new Date(currentData.time).toLocaleString("de-DE"));
-    } else {
-      // Stop animation when reaching the end
-      if (animationInterval) {
-        clearInterval(animationInterval);
-        animationInterval = null;
-      }
-    }
-  };
-
-  // Auto-animate every 2 seconds
-  animationInterval = setInterval(animate, animationDuration);
+  // Create stacked area chart
+  const cleanupAreaChart = createStackedAreaChart(areaChartContainer, data);
 
   // Cleanup on unmount
   onUnmounted(() => {
-    if (animationInterval) {
-      clearInterval(animationInterval);
-    }
-    resizeObserver.disconnect();
+    cleanupBarChart();
+    cleanupAreaChart();
   });
 });
 </script>
 
 <template>
   <div class="w-full">
-    <h1>Statistics</h1>
+    <h1 class="text-lg font-bold text-center">Bier Rennen</h1>
+    <h2 class="text-sm text-center">Getrunkene Bier pro Mitglied</h2>
     <div ref="chartContainer" class="chart-container w-dvw"></div>
+    <div class="h-[460px]"></div>
+    <h1 class="text-lg font-bold text-center mt-8">Stacked Area Chart</h1>
+    <h2 class="text-sm text-center mb-4">Tägliche Bier-Konsum über ein Jahr</h2>
+    <div ref="areaChartContainer" class="area-chart-container w-full"></div>
+    <div class="h-[460px]"></div>
   </div>
 </template>
 
 <style scoped>
 .chart-container {
   margin: 20px auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.area-chart-container {
+  margin: 20px auto;
+  max-width: 1200px;
+  padding: 0 20px;
   position: absolute;
   left: 0;
   right: 0;
