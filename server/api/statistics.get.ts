@@ -10,6 +10,7 @@ export default defineCachedEventHandler(
         name: users.name,
         userId: drinks.userId,
         createdAt: drinks.createdAt,
+        role: users.role,
       })
       .from(drinks)
       .leftJoin(users, eq(drinks.userId, users.userId))

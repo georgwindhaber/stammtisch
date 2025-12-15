@@ -5,6 +5,7 @@ export interface DrinkEntry {
   name: string | null;
   userId: number | null;
   createdAt: Date | string | number;
+  role?: string | null;
 }
 
 export interface UserData {
@@ -337,10 +338,13 @@ export function createStackedAreaChart(
 ): () => void {
   if (!container.value) return () => {};
 
+  // Filter to only include members
+  const memberData = data.filter((drink) => drink.role === "member");
+
   // Process data for area chart: aggregate by day and user
   const dailyDataMap = new Map<string, Map<number, number>>(); // day -> userId -> count
 
-  data.forEach((drink) => {
+  memberData.forEach((drink) => {
     if (!drink.userId) return;
     const time =
       drink.createdAt instanceof Date
@@ -374,12 +378,12 @@ export function createStackedAreaChart(
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
-  // Get all unique user IDs
+  // Get all unique user IDs (only members)
   const userIds = Array.from(
-    new Set(data.filter((d) => d.userId).map((d) => d.userId!))
+    new Set(memberData.filter((d) => d.userId).map((d) => d.userId!))
   );
   const userNamesMap = new Map<number, string>();
-  data.forEach((d) => {
+  memberData.forEach((d) => {
     if (d.userId && d.name) {
       userNamesMap.set(d.userId, d.name);
     }
@@ -515,18 +519,8 @@ export function createStackedAreaChart(
     .attr("x", 0 - areaHeight / 2)
     .attr("dy", "1em")
     .style("text-anchor", "middle")
-    .style("fill", "#333")
+    .style("fill", "#d3d3d3")
     .text("Anzahl Bier");
-
-  areaG
-    .append("text")
-    .attr(
-      "transform",
-      `translate(${areaWidth / 2}, ${areaHeight + areaMargin.bottom - 10})`
-    )
-    .style("text-anchor", "middle")
-    .style("fill", "#333")
-    .text("Datum");
 
   // Handle resize for area chart
   const updateAreaDimensions = () => {
