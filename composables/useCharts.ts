@@ -25,68 +25,99 @@ export function createBarChartRace(
 ): () => void {
   if (!container.value) return () => {};
 
-  // Group drinks by userId and create time-based cumulative data
-  const userMap = new Map<
-    number,
-    { name: string; entries: Array<{ time: number; value: number }> }
-  >();
+  // Group drinks by day and userId
+  const dailyDataMap = new Map<string, Map<number, number>>(); // dayKey -> userId -> total drinks that day
+  const userNamesMap = new Map<number, string>();
+  const allDates: Date[] = [];
 
   data.forEach((drink) => {
     if (!drink.userId) return;
     const userId = drink.userId;
-    if (!userMap.has(userId)) {
-      userMap.set(userId, {
-        name: drink.name || `User ${userId}`,
-        entries: [],
-      });
+
+    // Store user name
+    if (drink.name && !userNamesMap.has(userId)) {
+      userNamesMap.set(userId, drink.name);
     }
-    const user = userMap.get(userId)!;
+
     const time =
       drink.createdAt instanceof Date
         ? drink.createdAt.getTime()
         : typeof drink.createdAt === "string"
         ? new Date(drink.createdAt).getTime()
         : drink.createdAt;
-    user.entries.push({ time, value: drink.value });
+    const date = new Date(time);
+
+    // Normalize to start of day
+    date.setHours(0, 0, 0, 0);
+    const dayKey = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+    if (!dailyDataMap.has(dayKey)) {
+      dailyDataMap.set(dayKey, new Map());
+      allDates.push(new Date(date));
+    }
+    const dayMap = dailyDataMap.get(dayKey)!;
+    dayMap.set(userId, (dayMap.get(userId) || 0) + drink.value);
   });
 
-  // Sort entries by time and create cumulative totals
-  const timePoints = new Set<number>();
-  userMap.forEach((user) => {
-    user.entries.sort((a, b) => a.time - b.time);
-    let cumulative = 0;
-    user.entries = user.entries.map((entry) => {
-      cumulative += entry.value;
-      timePoints.add(entry.time);
-      return { time: entry.time, value: cumulative };
-    });
-  });
+  // Find date range
+  if (allDates.length === 0) {
+    d3.select(container.value)
+      .append("div")
+      .style("text-align", "center")
+      .style("padding", "40px")
+      .text("No data available");
+    return () => {};
+  }
 
-  const sortedTimePoints = Array.from(timePoints).sort((a, b) => a - b);
+  const minDate = d3.min(allDates)!;
+  const maxDate = d3.max(allDates)!;
 
-  // Create data for each time point
+  // Generate all days in the range
+  const allDays: Date[] = [];
+  const currentDate = new Date(minDate);
+  while (currentDate <= maxDate) {
+    allDays.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  // Create cumulative totals per user
+  const cumulativeTotals = new Map<number, number>(); // userId -> cumulative total
+
+  // Create data for each day
   const timeSeriesData: TimeSeriesDataPoint[] = [];
 
-  sortedTimePoints.forEach((time) => {
-    const users: UserData[] = [];
-    userMap.forEach((userData, userId) => {
-      // Find the last entry before or at this time
-      const relevantEntry = userData.entries
-        .filter((e) => e.time <= time)
-        .sort((a, b) => b.time - a.time)[0];
+  allDays.forEach((date) => {
+    const dayKey = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
-      if (relevantEntry) {
-        users.push({
-          userId,
-          name: userData.name,
-          total: relevantEntry.value,
-        });
-      }
+    // Get drinks for this day
+    const dayMap = dailyDataMap.get(dayKey) || new Map();
+
+    // Update cumulative totals for each user
+    dayMap.forEach((dailyValue, userId) => {
+      const currentTotal = cumulativeTotals.get(userId) || 0;
+      cumulativeTotals.set(userId, currentTotal + dailyValue);
+    });
+
+    // Create user data array with current cumulative totals
+    const users: UserData[] = [];
+    cumulativeTotals.forEach((total, userId) => {
+      users.push({
+        userId,
+        name: userNamesMap.get(userId) || `User ${userId}`,
+        total,
+      });
     });
 
     // Sort by total descending
     users.sort((a, b) => b.total - a.total);
-    timeSeriesData.push({ time, users });
+
+    // Use start of day timestamp
+    const dayTimestamp = date.getTime();
+    timeSeriesData.push({ time: dayTimestamp, users });
   });
 
   // Check if we have data
@@ -113,8 +144,8 @@ export function createBarChartRace(
   const barHeight = 30;
   const topN = 10; // Show top 10 users
 
-  const animationDuration = 300;
-  const speed = 250;
+  const animationDuration = 25;
+  const speed = 15;
 
   // Clear previous content
   d3.select(container.value).selectAll("*").remove();
@@ -264,7 +295,7 @@ export function createBarChartRace(
     .attr("fill", "white")
     .style("font-size", "28px")
     .style("font-weight", "bold")
-    .text(() => new Date(currentData.time).toLocaleString("de-DE"));
+    .text(() => new Date(currentData.time).toLocaleDateString("de-DE"));
 
   // Animate through time
   const animate = () => {
@@ -292,7 +323,7 @@ export function createBarChartRace(
         .style("font-size", "28px")
         .style("font-weight", "bold")
         .attr("y", -35)
-        .text(() => new Date(currentData.time).toLocaleString("de-DE"));
+        .text(() => new Date(currentData.time).toLocaleDateString("de-DE"));
     } else {
       // Stop animation when reaching the end
       if (animationInterval) {
@@ -571,4 +602,3 @@ export function createStackedAreaChart(
     areaResizeObserver.disconnect();
   };
 }
-
