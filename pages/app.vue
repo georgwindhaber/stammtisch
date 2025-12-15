@@ -3,8 +3,6 @@ import MdTab from "~/components/material-design/md-tab.vue";
 
 const { signOut, data } = useAuth();
 
-const router = useRouter();
-
 export type Member = {
   name: string;
   paid: number;
@@ -13,7 +11,11 @@ export type Member = {
   rounds: number;
 };
 
-router.replace({ name: "members" });
+const router = useRouter();
+const route = useRoute();
+if (route.name === "app") {
+  router.replace({ name: "members" });
+}
 </script>
 
 <template>
