@@ -513,7 +513,7 @@ export function createStackedAreaChart(
   const areaColorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
   // Draw areas
-  areaG
+  const areaPaths = areaG
     .selectAll<
       SVGPathElement,
       d3.Series<Record<string, number | Date>, string>
@@ -525,6 +525,33 @@ export function createStackedAreaChart(
     .attr("stroke", "#fff")
     .attr("stroke-width", 0.5)
     .attr("d", (d) => area(d) || "");
+
+  // Add labels for each area
+  areaG
+    .selectAll<
+      SVGTextElement,
+      d3.Series<Record<string, number | Date>, string>
+    >("text.area-label")
+    .data(stackedData)
+    .enter()
+    .append("text")
+    .attr("class", "area-label")
+    .attr("x", areaWidth - 10)
+    .attr("y", (d) => {
+      // Position label at the middle of the area at the end (right side)
+      const lastPoint = d[d.length - 1];
+      const middleY = (lastPoint[0] + lastPoint[1]) / 2;
+      return yScaleArea(middleY);
+    })
+    .attr("text-anchor", "end")
+    .attr("dy", "0.35em")
+    .style("fill", "#333")
+    .style("font-size", "12px")
+    .style("font-weight", "500")
+    .text((d) => {
+      const userId = parseInt(d.key);
+      return userNamesMap.get(userId) || `User ${userId}`;
+    });
 
   // Add x-axis
   const xAxis = d3.axisBottom(xScaleArea).ticks(d3.timeMonth.every(1));
@@ -573,6 +600,20 @@ export function createStackedAreaChart(
         d3.Series<Record<string, number | Date>, string>
       >("path")
       .attr("d", (d) => area(d) || "");
+
+    // Update labels position
+    areaG
+      .selectAll<
+        SVGTextElement,
+        d3.Series<Record<string, number | Date>, string>
+      >("text.area-label")
+      .attr("x", areaWidth - 10)
+      .attr("y", (d) => {
+        const lastPoint = d[d.length - 1];
+        const middleY = (lastPoint[0] + lastPoint[1]) / 2;
+        return yScaleArea(middleY);
+      });
+
     areaG.selectAll<SVGGElement, unknown>(".x-axis").remove();
     areaG.selectAll<SVGGElement, unknown>(".y-axis").remove();
 

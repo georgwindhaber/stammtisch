@@ -15,16 +15,21 @@ onMounted(() => {
 
   const data = drinks.data.value as unknown as DrinkEntry[];
 
-  // Create bar chart race
-  const cleanupBarChart = createBarChartRace(chartContainer, data);
+  // Wait for next tick to ensure container has proper dimensions
+  nextTick(() => {
+    if (!chartContainer.value) return;
 
-  // Create stacked area chart
-  const cleanupAreaChart = createStackedAreaChart(areaChartContainer, data);
+    // Create bar chart race
+    const cleanupBarChart = createBarChartRace(chartContainer, data);
 
-  // Cleanup on unmount
-  onUnmounted(() => {
-    cleanupBarChart();
-    cleanupAreaChart();
+    // Create stacked area chart
+    const cleanupAreaChart = createStackedAreaChart(areaChartContainer, data);
+
+    // Cleanup on unmount
+    onUnmounted(() => {
+      cleanupBarChart();
+      cleanupAreaChart();
+    });
   });
 });
 </script>
@@ -48,6 +53,8 @@ onMounted(() => {
   position: absolute;
   left: 0;
   right: 0;
+  width: 100vw;
+  min-width: 800px;
 }
 
 .area-chart-container {
