@@ -1,8 +1,5 @@
-import { H3Event } from "h3";
-import { z } from "zod";
 import { drinks, paid, rounds, users } from "../database/schema";
 import { eq, desc, aliasedTable } from "drizzle-orm";
-import { alias } from "drizzle-orm/mysql-core";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -53,10 +50,6 @@ export default defineEventHandler(async (event) => {
       .leftJoin(createdByAlias, eq(paid.createdBy, createdByAlias.userId))
       .orderBy(desc(paid.createdAt))
       .limit(entryLimit);
-
-    console.log("drinksResult", drinksResult);
-    console.log("roundsResult", roundsResult);
-    console.log("paidResult", paidResult);
 
     return { drinks: drinksResult, rounds: roundsResult, paid: paidResult };
   } catch (error) {

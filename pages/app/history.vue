@@ -17,7 +17,7 @@ const rows = [
 </script>
 
 <template>
-  <div class="flex flex-col divide-surface-container-highest w-full divide-y-1">
+  <div class="flex flex-col divide-surface-container-highest w-full divide-y">
     <div v-for="entry of rows" class="py-3">
       <div class="text-primary flex items-center gap-2">
         <icon
