@@ -17,6 +17,23 @@ if (!history.data.value) {
   throw new Error("Failed to fetch history data");
 }
 
+const offset = ref(0);
+
+const loadMore = async () => {
+  offset.value++;
+  const newData = await $fetch("/api/history", {
+    query: {
+      offset: offset.value,
+    },
+  });
+
+  if (newData && history.data.value) {
+    history.data.value.drinks.push(...newData.drinks);
+    history.data.value.paid.push(...newData.paid);
+    history.data.value.rounds.push(...newData.rounds);
+  }
+};
+
 const rows = computed(() => {
   if (!history.data.value) {
     return [];
@@ -134,6 +151,19 @@ const deleteEntry = async (entryId: number, mode: string) => {
           </div>
         </alert-dialog-content>
       </alert-dialog-root>
+    </div>
+    <div class="flex justify-center my-4">
+      <md-button
+        theme="tonal"
+        class="flex items-center justify-center gap-1"
+        @click="loadMore"
+      >
+        <icon
+          name="material-symbols:sim-card-download-outline-rounded"
+          class="text-lg"
+        />
+        Mehr laden...
+      </md-button>
     </div>
   </div>
 </template>
