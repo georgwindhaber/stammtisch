@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/libsql";
 export { sql, eq, and, or } from "drizzle-orm";
 import { createClient } from "@libsql/client";
+import "dotenv/config";
 
 import * as schema from "../database/schema";
 
@@ -11,7 +12,7 @@ export function useDrizzle() {
     createClient({ url: process.env.DB_URL!, authToken: process.env.DB_TOKEN }),
     {
       schema,
-    }
+    },
   );
 }
 
