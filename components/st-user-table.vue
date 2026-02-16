@@ -55,7 +55,7 @@ const submit = async (mode: string) => {
 const toggleMember = (member: Member) => {
   if (selectedUsersId.value.includes(member.userId)) {
     selectedUsersId.value = selectedUsersId.value.filter(
-      (m) => m !== member.userId
+      (m) => m !== member.userId,
     );
   } else {
     selectedUsersId.value.push(member.userId);
@@ -87,7 +87,7 @@ const membersInOrder = computed(() => {
 </script>
 
 <template>
-  <section class="grid w-full divide-surface-container-highest divide-y-1">
+  <section class="grid w-full divide-surface-container-highest divide-y">
     <div
       class="grid grid-cols-subgrid col-span-5 sticky top-0 gap-2 py-3 px-3 text-secondary bg-surface"
     >
@@ -151,7 +151,11 @@ const membersInOrder = computed(() => {
   </section>
 
   <div class="flex gap-3 w-full mt-5">
-    <md-icon-button icon="material-symbols:remove-rounded" @click="value--" />
+    <md-icon-button
+      icon="material-symbols:remove-rounded"
+      @click="value--"
+      :disabled="value < 2"
+    />
     <md-number
       v-model="value"
       type="number"
@@ -182,7 +186,7 @@ const membersInOrder = computed(() => {
       {{ value }}
       <icon
         name="material-symbols:euro-rounded"
-        class="text-md translate-y-[1px]"
+        class="text-md translate-y-px"
       />
     </md-button>
     <md-button
@@ -192,7 +196,7 @@ const membersInOrder = computed(() => {
     >
       <template v-if="value > 0"> + </template>
       {{ value }}
-      <icon name="tdesign:beer" class="translate-y-[1px]" />
+      <icon name="tdesign:beer" class="translate-y-px" />
     </md-button>
   </div>
 
